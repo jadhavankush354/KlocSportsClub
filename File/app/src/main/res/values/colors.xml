@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <!-- Light Theme -->
+    <color name="Purple80">#FFD0BCFF</color>
+    <color name="PurpleGrey80">#FFCCC2DC</color>
+    <color name="Pink80">#FFEFB8C8</color>
+    <color name="Purple40">#FF6650A4</color>
+    <color name="PurpleGrey40">#FF625B71</color>
+    <color name="Pink40">#FF7D5260</color>
+    <color name="primaryLight">#FF6D5E0F</color>
+    <color name="onPrimaryLight">#FFFFFFFF</color>
+    <color name="primaryContainerLight">#FFF8E287</color>
+    <color name="onPrimaryContainerLight">#FF221B00</color>
+    <color name="secondaryLight">#FF665E40</color>
+    <color name="onSecondaryLight">#FFFFFFFF</color>
+    <color name="secondaryContainerLight">#FFEEE2BC</color>
+    <color name="onSecondaryContainerLight">#FF211B04</color>
+    <color name="tertiaryLight">#FF43664E</color>
+    <color name="onTertiaryLight">#FFFFFFFF</color>
+    <color name="tertiaryContainerLight">#FFC5ECCE</color>
+    <color name="onTertiaryContainerLight">#FF00210F</color>
+    <color name="errorLight">#FFBA1A1A</color>
+    <color name="onErrorLight">#FFFFFFFF</color>
+    <color name="errorContainerLight">#FFFFDAD6</color>
+    <color name="onErrorContainerLight">#FF410002</color>
+    <color name="backgroundLight">#FFFFF9EE</color>
+    <color name="onBackgroundLight">#FF1E1B13</color>
+    <color name="surfaceLight">#FFFFF9EE</color>
+    <color name="onSurfaceLight">#FF1E1B13</color>
+    <color name="surfaceVariantLight">#FFEAE2D0</color>
+    <color name="onSurfaceVariantLight">#FF4B4739</color>
+    <!-- Add the rest of the light theme colors here -->
+
+    <!-- Medium Contrast Theme -->
+    <color name="primaryLightMediumContrast">#FF4F4200</color>
+    <color name="onPrimaryLightMediumContrast">#FFFFFFFF</color>
+    <color name="primaryContainerLightMediumContrast">#FF857425</color>
+    <color name="onPrimaryContainerLightMediumContrast">#FFFFFFFF</color>
+    <color name="secondaryLightMediumContrast">#FF4A4327</color>
+    <color name="onSecondaryLightMediumContrast">#FFFFFFFF</color>
+    <color name="secondaryContainerLightMediumContrast">#FF7D7455</color>
+    <color name="onSecondaryContainerLightMediumContrast">#FFFFFFFF</color>
+    <color name="tertiaryLightMediumContrast">#FF284A34</color>
+    <color name="onTertiaryLightMediumContrast">#FFFFFFFF</color>
+    <color name="tertiaryContainerLightMediumContrast">#FF597D64</color>
+    <color name="onTertiaryContainerLightMediumContrast">#FFFFFFFF</color>
+    <color name="errorLightMediumContrast">#FF8C0009</color>
+    <color name="onErrorLightMediumContrast">#FFFFFFFF</color>
+    <color name="errorContainerLightMediumContrast">#FFDA342E</color>
+    <color name="onErrorContainerLightMediumContrast">#FFFFFFFF</color>
+    <color name="backgroundLightMediumContrast">#FFFFF9EE</color>
+    <color name="onBackgroundLightMediumContrast">#FF1E1B13</color>
+    <color name="surfaceLightMediumContrast">#FFFFF9EE</color>
+    <color name="onSurfaceLightMediumContrast">#FF1E1B13</color>
+    <color name="surfaceVariantLightMediumContrast">#FFEAE2D0</color>
+    <color name="onSurfaceVariantLightMediumContrast">#FF474335</color>
+    <!-- Add the rest of the medium contrast theme colors here -->
+
+    <!-- High Contrast Theme -->
+    <color name="primaryLightHighContrast">#FF292200</color>
+    <color name="onPrimaryLightHighContrast">#FFFFFFFF</color>
+    <color name="primaryContainerLightHighContrast">#FF4F4200</color>
+    <color name="onPrimaryContainerLightHighContrast">#FFFFFFFF</color>
+    <color name="secondaryLightHighContrast">#FF282209</color>
+    <color name="onSecondaryLightHighContrast">#FFFFFFFF</color>
+    <color name="secondaryContainerLightHighContrast">#FF4A4327</color>
+    <color name="onSecondaryContainerLightHighContrast">#FFFFFFFF</color>
+    <color name="tertiaryLightHighContrast">#FF042815</color>
+    <color name="onTertiaryLightHighContrast">#FFFFFFFF</color>
+    <color name="tertiaryContainerLightHighContrast">#FF284A34</color>
+    <color name="onTertiaryContainerLightHighContrast">#FFFFFFFF</color>
+    <color name="errorLightHighContrast">#FF4E0002</color>
+    <color name="onErrorLightHighContrast">#FFFFFFFF</color>
+    <color name="errorContainerLightHighContrast">#FF8C0009</color>
+    <color name="onErrorContainerLightHighContrast">#FFFFFFFF</color>
+    <color name="backgroundLightHighContrast">#FFFFF9EE</color>
+    <color name="onBackgroundLightHighContrast">#FF1E1B13</color>
+    <color name="surfaceLightHighContrast">#FFFFF9EE</color>
+    <color name="onSurfaceLightHighContrast">#FF000000</color>
+    <color name="surfaceVariantLightHighContrast">#FFEAE2D0</color>
+    <color name="onSurfaceVariantLightHighContrast">#FF272418</color>
+    <!-- Add the rest of the high contrast theme colors here -->
+
+    <!-- Dark Theme -->
+    <color name="primaryDark">#FFDBC66E</color>
+    <color name="onPrimaryDark">#FF3A3000</color>
+    <color name="primaryContainerDark">#FF534600</color>
+    <color name="onPrimaryContainerDark">#FFF8E287</color>
+    <color name="secondaryDark">#FFD1C6A1</color>
+    <color name="onSecondaryDark">#FF363016</color>
+    <color name="secondaryContainerDark">#FF4E472A</color>
+    <color name="onSecondaryContainerDark">#FFEEE2BC</color>
+    <color name="tertiaryDark">#FFA9D0B3</color>
+    <color name="onTertiaryDark">#FF143723</color>
+    <color name="tertiaryContainerDark">#FF2C4E38</color>
+
+</resources>

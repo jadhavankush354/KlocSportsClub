@@ -1,0 +1,149 @@
+equipment,typeOfEquipment,categories,EquipmentSize,minPlayerAge,maxPlayerAge,minPlayerHeight,maxPlayerHeight
+Bat,Leather,KashmirWillow,Grade1(24*3.3/8 inch),4,5,4,4.5
+Bat,Leather,KashmirWillow,Grade2(24.1/5*3.1/28 inch),6,7,4.3,4.6
+Bat,Leather,KashmirWillow,Grade3(27.3/4*3.1/2 inch),8,9,4.6,4.9
+Bat,Leather,KashmirWillow,Grade4(29.3/4*3.3/4 inch),10,11,4.9,4.11
+Bat,Leather,KashmirWillow,Grade5(30.3/4*4 inch),12,13,4.11,5.2
+Bat,Leather,KashmirWillow,Grade6(31.3/4*4 inch),13,14,5.2,5.6
+Bat,Leather,KashmirWillow,Horrow(32.3/4*4 inch),15,16,5.6,5.9
+Bat,Leather,KashmirWillow,FullSH(32.3/5*4 inch),17,18,5.9,6.2
+Bat,Leather,KashmirWillow,FullLH(33.1/2*4.1/4 inch),19,+35,6.2,7
+Bat,Leather,EnglishWillow,Grade1(24*3.3/8 cm),4,5,4,4.5
+Bat,Leather,EnglishWillow,Grade2(24.1/5*3.1/2 inch),6,7,4.3,4.6
+Bat,Leather,EnglishWillow,Grade3(27.3/4*3.1/2 inch),8,9,4.6,4.9
+Bat,Leather,EnglishWillow,Grade4(29.3/4*3.3/4 inch),10,11,4.9,4.11
+Bat,Leather,EnglishWillow,Grade5(30.3/4*4 inch),12,13,4.11,5.2
+Bat,Leather,EnglishWillow,Grade6(31.3/4*4 inch),13,14,5.2,5.6
+Bat,Leather,EnglishWillow,Horrow(32.3/4*4 inch),15,16,5.6,5.9
+Bat,Leather,EnglishWillow,FullSH(32.3/5*4 inch),17,18,5.9,6.2
+Bat,Leather,EnglishWillow,FullLH(33.1/2*4.1/4 inch),19,+35,6.2,7
+Bat,Leather,LongHandleBats,Grade1(Bat height,63cm),4,5,4,4.5
+Bat,Leather,LongHandleBats,Grade2(Bat height 65cm),6,7,4.3,4.6
+Bat,Leather,LongHandleBats,Grade3(Bat height 68cm),8,8,4.6,4.9
+Bat,Leather,LongHandleBats,Grade4(Bat height 70cm),9,11,4.9,4.11
+Bat,Leather,LongHandleBats,Grade5(Bat height 72cm),12,13,4.11,5.2
+Bat,Leather,LongHandleBats,Grade6(Bat height 76cm),14,15,5.2,5.6
+Bat,Leather,LongHandleBats,Horrow(Bat height 78cm),16,17,5.6,5.9
+Bat,Leather,LongHandleBats,FullSH(Bat height 82cm),18,19,5.9,6.2
+Bat,Leather,LongHandleBats,FullLH(Bat height 85cm),20,+35,6.2,7
+Bat,Tennis,HardTennis,Grade1(24*3.3/8 inch),4,5,4,4.5
+Bat,Tennis,HardTennis,Grade2(24.1/5*3.1/2 inch) ,6,7,4.3,4.6
+Bat,Tennis,HardTennis,Grade3(27.3/4*3.1/2 inch),8,9,4.6,4.9
+Bat,Tennis,HardTennis,Grade4(29.3/4*3.3/4 inch),10,11,4.9,4.11
+Bat,Tennis,HardTennis,Grade5(30.3/4*4 inch),12,13,4.11,5.2
+Bat,Tennis,HardTennis,Grade6(31.3/4*4 inch),13,14,5.2,5.6
+Bat,Tennis,HardTennis,Horrow(32.3/4*4 inch),15,15,5.6,5.9
+Bat,Tennis,HardTennis,FullSH(32.3/5*4 inch),16,18,5.9,6.2
+Bat,Tennis,HardTennis,FullLH(33.1/2*4.1/4 inch),19,+35,6.2,7
+Bat,Tennis,lowTennis,Grade1(24*3.3/8 inch),4,5,4,4.5
+Bat,Tennis,lowTennis,Grade2(24.1/5*3.1/2 inch) ,6,7,4.3,4.6
+Bat,Tennis,lowTennis,Grade3(27.3/4*3.1/2 inch),8,9,4.6,4.9
+Bat,Tennis,lowTennis,Grade4(29.3/4*3.3/4 inch),10,11,4.9,4.11
+Bat,Tennis,lowTennis,Grade5(30.3/4*4 inch),12,13,4.11,5.2
+Bat,Tennis,lowTennis,Grade6(31.3/4*4 inch),14,16,5.2,5.6
+Bat,Tennis,lowTennis,Horrow(32.3/4*4 inch),17,18,5.6,5.9
+Bat,Tennis,lowTennis,FullSH(32.3/5*4 inch),19,20,5.9,6.2
+Bat,Tennis,lowTennis,FullLH(33.1/2*4.1/4 inch),21,+35,6.2,7
+ProtectiveGear,Gloves,HandGloves,XXSJunior,2,5,3.5,4.0
+ProtectiveGear,Gloves,HandGloves,XSJunior,6,8,4,4.5
+ProtectiveGear,Gloves,HandGloves,SmallJunior,9,10,4.3,4.6
+ProtectiveGear,Gloves,HandGloves,Junior,11,12,4.6,4.9
+ProtectiveGear,Gloves,HandGloves,smallAdult,13,14,4.9,4.11
+ProtectiveGear,Gloves,HandGloves,youth,14,15,4.11,5.2
+ProtectiveGear,Gloves,HandGloves,AdultSmall,16,17,5.2,5.6
+ProtectiveGear,Gloves,HandGloves,AdultMedium,17,18,5.6,5.9
+ProtectiveGear,Gloves,HandGloves,AdultLarge,19,+35,5.9,6.2
+ProtectiveGear,Pads,LegPads,XXSJunior,6,8,0,0
+ProtectiveGear,Pads,LegPads,XSJunior,8,10,4.3,4.6
+ProtectiveGear,Pads,LegPads,SmallJunior,11,12,4.6,4.9
+ProtectiveGear,Pads,LegPads,Junior,13,14,4.9,4.11
+ProtectiveGear,Pads,LegPads,smallAdult,15,16,5.2,5.6
+ProtectiveGear,Pads,LegPads,youth,17,18,5.6,5.9
+ProtectiveGear,Pads,LegPads,AdultSmall,19,20,5.9,6.2
+ProtectiveGear,Pads,LegPads,AdultLarge,21,+35,6.2,7
+ProtectiveGear,Pads,ThighGuards,ExtraSmall,4,8,4.5,4.8
+ProtectiveGear,Pads,ThighGuards,Small,9,12,4.9,5.2
+ProtectiveGear,Pads,ThighGuards,Medium,13,15,5.3,5.8
+ProtectiveGear,Pads,ThighGuards,Large,16,18,5.9,6.2
+ProtectiveGear,Pads,ThighGuards,ExtraLarge,19,+35,6.2,6.2
+ProtectiveGear,Helmet,Helmet,ExtraSmall(54cm),4,8,4.5,4.8
+ProtectiveGear,Helmet,Helmet,Small(54cm),9,10,4.9,5.2
+ProtectiveGear,Helmet,Helmet,Medium(54cm),11,12,5.3,5.8
+ProtectiveGear,Helmet,Helmet,Large(54cm) ,13,14, 5.9,6.0
+ProtectiveGear,Helmet,Helmet,ExtraLarge(54cm),15,18,6.0,6.2
+ProtectiveGear,Helmet,Helmet,XXL(54cm),19,+35,6.2,6.2
+Shoes,Male,Spiky,UK(5),0,0,22.9,23.3
+Shoes,Male,Spiky,UK(5.5),0,0,22.9,23.3
+Shoes,Male,Spiky,UK(6),0,0,23.3,23.7
+Shoes,Male,Spiky,UK(6.5),0,0,23.8,24.2
+Shoes,Male,Spiky,UK(7),0,0,24.3,24.7
+Shoes,Male,Spiky,UK(7.5),0,0,24.8,25.3
+Shoes,Male,Spiky,UK(8),0,0,25.4,25.8
+Shoes,Male,Spiky,UK(8.5),0,0,25.9,26.3
+Shoes,Male,Spiky,UK(9),0,0,26.4,26.8
+Shoes,Male,Spiky,UK(9.5),0,0,26.9,27.3
+Shoes,Male,Spiky,UK(10),0,0,27.4,27.7
+Shoes,Male,Spiky,UK(10.5),0,0,27.8,28.2
+Shoes,Male,Spiky,UK(11),0,0,28.3,28.7
+Shoes,Male,Spiky,UK(11.5),0,0,28.8,29.2
+Shoes,Male,Spiky,UK(12),0,0,30.3,30.6
+Shoes,Male,Spiky,UK(12.5),0,0,30.7,31.1
+Shoes,Male,Spiky,UK(13),0,0,31.4,31.8
+Shoes,Male,Spiky,UK(13.5),0,0,31.9,32.3
+Shoes,Female,Spiky,UK(5),0,0,22.9,23.3
+Shoes,Female,Spiky,UK(5.5),0,0,22.9,23.3
+Shoes,Female,Spiky,UK(6),0,0,23.3,23.7
+Shoes,Female,Spiky,UK(6.5),0,0,23.8,24.2
+Shoes,Female,Spiky,UK(7),0,0,24.3,24.7
+Shoes,Female,Spiky,UK(7.5),0,0,24.8,25.3
+Shoes,Female,Spiky,UK(8),0,0,25.4,25.8
+Shoes,Female,Spiky,UK(8.5),0,0,25.9,26.3
+Shoes,Female,Spiky,UK(9),0,0,26.4,26.8
+Shoes,Female,Spiky,UK(9.5),0,0,26.9,27.3
+Shoes,Female,Spiky,UK(10),0,0,27.4,27.7
+Shoes,Female,Spiky,UK(10.5),0,0,27.8,28.2
+Shoes,Female,Spiky,UK(11),0,0,28.3,28.7
+Shoes,Female,Spiky,UK(11.5),0,0,28.8,29.2
+Shoes,Female,Spiky,UK(12),0,0,30.3,30.6
+Shoes,Female,Spiky,UK(12.5),0,0,30.7,31.1
+Shoes,Female,Spiky,UK(13),0,0,31.4,31.8
+Shoes,Female,Spiky,UK(13.5),0,0,31.9,32.3
+Shoes,Male,Non-Spiky,UK(5),0,0,22.9,23.3
+Shoes,Male,Non-Spiky,UK(5.5),0,0,22.9,23.3
+Shoes,Male,Non-Spiky,UK(6),0,0,23.3,23.7
+Shoes,Male,Non-Spiky,UK(6.5),0,0,23.8,24.2
+Shoes,Male,Non-Spiky,UK(7),0,0,24.3,24.7
+Shoes,Male,Non-Spiky,UK(7.5),0,0,24.8,25.3
+Shoes,Male,Non-Spiky,UK(8),0,0,25.4,25.8
+Shoes,Male,Non-Spiky,UK(8.5),0,0,25.9,26.3
+Shoes,Male,Non-Spiky,UK(9),0,0,26.4,26.8
+Shoes,Male,Non-Spiky,UK(9.5),0,0,26.9,27.3
+Shoes,Male,Non-Spiky,UK(10),0,0,27.4,27.7
+Shoes,Male,Non-Spiky,UK(10.5),0,0,27.8,28.2
+Shoes,Male,Non-Spiky,UK(11),0,0,28.3,28.7
+Shoes,Male,Non-Spiky,UK(11.5),0,0,28.8,29.2
+Shoes,Male,Non-Spiky,UK(12),0,0,30.3,30.6
+Shoes,Male,Non-Spiky,UK(12.5),0,0,30.7,31.1
+Shoes,Male,Non-Spiky,UK(13),0,0,31.4,31.8
+Shoes,Male,Non-Spiky,UK(13.5),0,0,31.9,32.3
+Shoes,Female,Non-Spiky,UK(5),0,0,22.9,23.3
+Shoes,Female,Non-Spiky,UK(5.5),0,0,22.9,23.3
+Shoes,Female,Non-Spiky,UK(6),0,0,23.3,23.7
+Shoes,Female,Non-Spiky,UK(6.5),0,0,23.8,24.2
+Shoes,Female,Non-Spiky,UK(7),0,0,24.3,24.7
+Shoes,Female,Non-Spiky,UK(7.5),0,0,24.8,25.3
+Shoes,Female,Non-Spiky,UK(8),0,0,25.4,25.8
+Shoes,Female,Non-Spiky,UK(8.5),0,0,25.9,26.3
+Shoes,Female,Non-Spiky,UK(9),0,0,26.4,26.8
+Shoes,Female,Non-Spiky,UK(9.5),0,0,26.9,27.3
+Shoes,Female,Non-Spiky,UK(10),0,0,27.4,27.7
+Shoes,Female,Non-Spiky,UK(10.5),0,0,27.8,28.2
+Shoes,Female,Non-Spiky,UK(11),0,0,28.3,28.7
+Shoes,Female,Non-Spiky,UK(11.5),0,0,28.8,29.2
+Shoes,Female,Non-Spiky,UK(12),0,0,30.3,30.6
+Shoes,Female,Non-Spiky,UK(12.5),0,0,30.7,31.1
+Shoes,Female,Non-Spiky,UK(13),0,0,31.4,31.8
+Shoes,Female,Non-Spiky,UK(13.5),0,0,31.9,32.3
+
+
+
