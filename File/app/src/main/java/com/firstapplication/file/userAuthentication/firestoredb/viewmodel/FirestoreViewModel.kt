@@ -47,7 +47,7 @@ class FirestoreViewModel @Inject constructor(
 
     init {
         getUsers()
-        fetchQuestions()
+        fetchQuestions("questions")
     }
 
     fun getUsers() = viewModelScope.launch {
@@ -129,23 +129,23 @@ class FirestoreViewModel @Inject constructor(
         }
     }
 
-    private fun fetchQuestions() {
+     fun fetchQuestions(subCategory: String) {
         viewModelScope.launch {
-            repo.getQuestions().collect { result ->
+            repo.getQuestions(subCategory).collect { result ->
                 _questionsState.value = result
             }
         }
     }
-    fun saveQuestion(question: Question) {
+    fun saveQuestion(question: Question, subCategory: String) {
         viewModelScope.launch {
-            repo.saveQuestion(question).collect { result ->
+            repo.saveQuestion(question, subCategory).collect { result ->
                 _questionsState.value = result
             }
         }
     }
-    fun saveReply(questionId: String, reply: Replies) = viewModelScope.launch {
+    fun saveReply(questionId: String, reply: Replies, subCategory: String) = viewModelScope.launch {
         viewModelScope.launch {
-            repo.saveReply(questionId, reply).collect { result ->
+            repo.saveReply(questionId, reply, subCategory).collect { result ->
                 _questionsState.value = result
             }
         }
@@ -160,8 +160,8 @@ class FirestoreViewModel @Inject constructor(
         val words = message.split(" ", "\n", "\t").map { it.lowercase() }
         return words.any { it in offensiveKeywords }
     }
-    fun deleteQuestion(questionId: String) = viewModelScope.launch {
-        repo.deleteQuestion(questionId).collect { result ->
+    fun deleteQuestion(questionId: String, subCategory: String) = viewModelScope.launch {
+        repo.deleteQuestion(questionId, subCategory).collect { result ->
             when (result) {
                 is ResultState.Success -> {
                     _questionsState.value = _questionsState.value.let { currentState ->
@@ -183,8 +183,8 @@ class FirestoreViewModel @Inject constructor(
             }
         }
     }
-    fun deleteReply(questionId: String, replyId: String) = viewModelScope.launch {
-        repo.deleteReply(questionId, replyId).collect { result ->
+    fun deleteReply(questionId: String, replyId: String, subCategory: String) = viewModelScope.launch {
+        repo.deleteReply(questionId, replyId, subCategory).collect { result ->
             when (result) {
                 is ResultState.Success -> {
                     _questionsState.value = _questionsState.value.let { currentState ->
@@ -213,8 +213,8 @@ class FirestoreViewModel @Inject constructor(
             }
         }
     }
-    fun deleteAllQuestions() = viewModelScope.launch {
-        repo.deleteAllQuestions().collect { result ->
+    fun deleteAllQuestions(subCategory: String) = viewModelScope.launch {
+        repo.deleteAllQuestions(subCategory).collect { result ->
             when (result) {
                 is ResultState.Success -> { _questionsState.value = ResultState.Success(emptyList()) }
                 is ResultState.Failure -> { _questionsState.value = ResultState.Failure(result.e) }

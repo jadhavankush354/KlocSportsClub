@@ -131,9 +131,9 @@ class FirestoreDbRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getQuestions(): Flow<ResultState<List<Question>>> = callbackFlow {
+    override fun getQuestions(subCategory: String): Flow<ResultState<List<Question>>> = callbackFlow {
         trySend(ResultState.Loading)
-        db.collection("questions")
+        db.collection(subCategory)
             .get()
             .addOnSuccessListener { snapshot ->
                 val questions = mutableListOf<Question>()
@@ -142,9 +142,10 @@ class FirestoreDbRepositoryImpl @Inject constructor(
                     val id = document.id
                     val userName = document.getString("userName")
                     val comment = document.getString("comment")
+                    val timestamp = document.getLong("timestamp") ?: 0L // Fetch timestamp
 
                     // Fetch replies from the sub-collection
-                    db.collection("questions")
+                    db.collection(subCategory)
                         .document(id)
                         .collection("replies")
                         .get()
@@ -154,20 +155,21 @@ class FirestoreDbRepositoryImpl @Inject constructor(
                                 println("ReplyID : $replyId")
                                 val replyUserName = replyDoc.getString("userName") ?: ""
                                 val subComment = replyDoc.getString("subComment") ?: ""
+                                val replyTimestamp = replyDoc.getLong("timestamp") ?: 0L // Fetch reply timestamp
                                 Replies(
                                     id = replyId,
                                     userName = replyUserName,
-                                    subComment = subComment
+                                    subComment = subComment,
+                                    timestamp = replyTimestamp
                                 )
                             }
-
-
                             questions.add(
                                 Question(
                                     id = id,
                                     userName = userName ?: "",
                                     comment = comment ?: "",
-                                    replies = replies
+                                    replies = replies,
+                                    timestamp = timestamp
                                 )
                             )
 
@@ -185,15 +187,17 @@ class FirestoreDbRepositoryImpl @Inject constructor(
         awaitClose { close() }
     }
 
-    override fun saveQuestion(question: Question): Flow<ResultState<List<Question>>> = callbackFlow {
+    override fun saveQuestion(question: Question, subCategory: String): Flow<ResultState<List<Question>>> = callbackFlow {
         trySend(ResultState.Loading)
 
+        // Add timestamp to question
+        val questionWithTimestamp = question.copy(timestamp = System.currentTimeMillis())
         // Step 1: Save the question
-        val saveTask = db.collection("questions")
-            .add(question)
+        val saveTask = db.collection(subCategory)
+            .add(questionWithTimestamp)
             .addOnSuccessListener { documentReference ->
                 // Step 2: Fetch all questions after saving
-                val fetchTask = db.collection("questions")
+                val fetchTask = db.collection(subCategory)
                     .get()
                     .addOnSuccessListener { snapshot ->
                         val questions = mutableListOf<Question>()
@@ -203,9 +207,10 @@ class FirestoreDbRepositoryImpl @Inject constructor(
                             val id = document.id
                             val userName = document.getString("userName")
                             val comment = document.getString("comment")
+                            val timestamp = document.getLong("timestamp") ?: 0L
 
                             // Fetch replies for each question
-                            val repliesTask = db.collection("questions")
+                            val repliesTask = db.collection(subCategory)
                                 .document(id)
                                 .collection("replies")
                                 .get()
@@ -214,7 +219,8 @@ class FirestoreDbRepositoryImpl @Inject constructor(
                                         val replyId = replyDoc.id
                                         val replyUserName = replyDoc.getString("userName") ?: ""
                                         val subComment = replyDoc.getString("subComment") ?: ""
-                                        Replies(id = replyId, userName = replyUserName, subComment = subComment)
+                                        val replyTimestamp = replyDoc.getLong("timestamp") ?: 0L
+                                        Replies(id = replyId, userName = replyUserName, subComment = subComment, timestamp = replyTimestamp)
                                     }
 
                                     // Add question with replies to the list
@@ -223,7 +229,8 @@ class FirestoreDbRepositoryImpl @Inject constructor(
                                             id = id,
                                             userName = userName ?: "",
                                             comment = comment ?: "",
-                                            replies = replies
+                                            replies = replies,
+                                            timestamp = timestamp
                                         )
                                     )
 
@@ -261,23 +268,27 @@ class FirestoreDbRepositoryImpl @Inject constructor(
         awaitClose { close() }
     }
 
-    override fun saveReply(questionId: String, reply: Replies): Flow<ResultState<List<Question>>> = callbackFlow {
+    override fun saveReply(questionId: String, reply: Replies, subCategory: String): Flow<ResultState<List<Question>>> = callbackFlow {
         trySend(ResultState.Loading)
+
+        // Add timestamp to reply
+        val replyWithTimestamp = reply.copy(timestamp = System.currentTimeMillis())
 
         // Prepare reply data
         val replyData = mapOf(
             "userName" to reply.userName,
-            "subComment" to reply.subComment
+            "subComment" to reply.subComment,
+            "timestamp" to replyWithTimestamp.timestamp // Include timestamp
         )
 
         // Save the reply
-        val saveReplyTask = db.collection("questions")
+        val saveReplyTask = db.collection(subCategory)
             .document(questionId)
             .collection("replies")
             .add(replyData)
             .addOnSuccessListener {
                 // After saving reply, fetch all questions
-                val fetchQuestionsTask = db.collection("questions")
+                val fetchQuestionsTask = db.collection(subCategory)
                     .get()
                     .addOnSuccessListener { snapshot ->
                         val questions = mutableListOf<Question>()
@@ -287,9 +298,10 @@ class FirestoreDbRepositoryImpl @Inject constructor(
                             val id = document.id
                             val userName = document.getString("userName")
                             val comment = document.getString("comment")
+                            val timestamp = document.getLong("timestamp") ?: 0L
 
                             // Fetch replies for each question
-                            val repliesTask = db.collection("questions")
+                            val repliesTask = db.collection(subCategory)
                                 .document(id)
                                 .collection("replies")
                                 .get()
@@ -298,7 +310,8 @@ class FirestoreDbRepositoryImpl @Inject constructor(
                                         val replyId = replyDoc.id
                                         val replyUserName = replyDoc.getString("userName") ?: ""
                                         val subComment = replyDoc.getString("subComment") ?: ""
-                                        Replies(id = replyId, userName = replyUserName, subComment = subComment)
+                                        val replyTimestamp = replyDoc.getLong("timestamp") ?: 0L
+                                        Replies(id = replyId, userName = replyUserName, subComment = subComment, timestamp = replyTimestamp)
                                     }
 
                                     // Add question with replies to the list
@@ -307,7 +320,8 @@ class FirestoreDbRepositoryImpl @Inject constructor(
                                             id = id,
                                             userName = userName ?: "",
                                             comment = comment ?: "",
-                                            replies = replies
+                                            replies = replies,
+                                            timestamp = timestamp
                                         )
                                     )
 
@@ -344,9 +358,9 @@ class FirestoreDbRepositoryImpl @Inject constructor(
         awaitClose { close() }
     }
 
-    override fun deleteQuestion(questionId: String): Flow<ResultState<String>> = callbackFlow {
+    override fun deleteQuestion(questionId: String, subCategory: String): Flow<ResultState<String>> = callbackFlow {
         trySend(ResultState.Loading)
-        db.collection("questions")
+        db.collection(subCategory)
             .document(questionId)
             .delete()
             .addOnCompleteListener { task ->
@@ -362,9 +376,9 @@ class FirestoreDbRepositoryImpl @Inject constructor(
         awaitClose { close() }
     }
 
-    override fun deleteReply(questionId: String, replyId: String): Flow<ResultState<String>> = callbackFlow {
+    override fun deleteReply(questionId: String, replyId: String, subCategory: String): Flow<ResultState<String>> = callbackFlow {
         trySend(ResultState.Loading)
-        val replyDocRef = db.collection("questions")
+        val replyDocRef = db.collection(subCategory)
             .document(questionId)
             .collection("replies")
             .document(replyId)
@@ -385,11 +399,11 @@ class FirestoreDbRepositoryImpl @Inject constructor(
         awaitClose { close() }
     }
 
-    override fun deleteAllQuestions(): Flow<ResultState<String>> = callbackFlow {
+    override fun deleteAllQuestions(subCategory: String): Flow<ResultState<String>> = callbackFlow {
         trySend(ResultState.Loading)
 
         // Fetch all questions
-        db.collection("questions")
+        db.collection(subCategory)
             .get()
             .addOnSuccessListener { snapshot ->
                 // Create a batch to delete all questions

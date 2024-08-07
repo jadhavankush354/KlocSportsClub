@@ -3,6 +3,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,19 +12,26 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -48,7 +56,13 @@ import com.firstapplication.file.userAuthentication.util.ResultState
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.TimeZone
+import java.util.concurrent.TimeUnit
+
 //community feed back updated
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AskQuestionForum(
     controller: NavHostController,
@@ -59,8 +73,13 @@ fun AskQuestionForum(
     val email = viewModel.currentUser?.takeIf { it.isNotEmpty() } ?: ""
     var userName by remember { mutableStateOf("") }
     var newQuestion by remember { mutableStateOf("") }
+    val categories = listOf("questions", "Cricket", "Bat", "Ball", "Gloves")
+    var selectedCategory by remember { mutableStateOf(categories[0]) }
+    var expanded by remember { mutableStateOf(false) }
+    var selectedText by remember { mutableStateOf(selectedCategory) }
     var listOfQuestions by remember { mutableStateOf(emptyList<Question>())}
     var expandedQuestionId by remember { mutableStateOf<String?>(null) }
+
 
     LaunchedEffect(email) {
         if (email.isNotEmpty()) {
@@ -71,10 +90,11 @@ fun AskQuestionForum(
         snapshotFlow { viewModel1.res1.value }.distinctUntilChanged().collect { state -> state.data?.let { user -> userName = user.user?.name ?: "" } }
     }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(selectedCategory) {
+        viewModel1.fetchQuestions(selectedCategory)
         viewModel1.questionsState.collect { result ->
             when (result) {
-                is ResultState.Success -> { listOfQuestions = result.data }
+                is ResultState.Success -> { listOfQuestions = result.data.sortedByDescending { it.timestamp } }
                 is ResultState.Failure -> { Toast.makeText(controller.context, "Failed to fetch questions", Toast.LENGTH_SHORT).show() }
                 ResultState.Loading -> {}
             }
@@ -82,9 +102,53 @@ fun AskQuestionForum(
     }
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         TopAppBar(
-            title = { Text("Questions") },
+            navigationIcon = {
+                IconButton(onClick = { controller.popBackStack() }) {
+                    Icon(imageVector = Icons.Default.ArrowBackIosNew, contentDescription = "Back")
+                }
+            },
+            title = {
+                ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = { expanded = !expanded }
+            ) {
+                TextField(
+                    value = selectedText,
+                    onValueChange = { selectedText = it },
+                    readOnly = true,
+                    trailingIcon = {
+                        Box(modifier = Modifier.padding(end = 8.dp)) {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                        }
+                    },
+                    modifier = Modifier.menuAnchor(),
+                    colors = TextFieldDefaults.textFieldColors(
+                        containerColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                    )
+                )
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    categories.forEach { category ->
+                        DropdownMenuItem(
+                            onClick = {
+                                selectedText = category
+                                expanded = false
+                                selectedCategory = category
+                            }
+                        ) {
+                            Text(text = category)
+                        }
+                    }
+                }
+            }
+            },
             actions = {
-                IconButton(onClick = { viewModel1.deleteAllQuestions() }) {
+                IconButton(onClick = { viewModel1.deleteAllQuestions(selectedCategory) }) {
                     Icon(
                         imageVector = Icons.Default.Delete, // Use a delete icon from material icons
                         contentDescription = "Delete"
@@ -107,9 +171,9 @@ fun AskQuestionForum(
                             if (it.id == question.id) { it.copy(replies = it.replies + newReply) } else { it }
                         }
                         val offencivelist =viewModel1.loadOffensiveKeywords(context)
-                        val isOffensive=viewModel1.containsOffensiveKeywords(newQuestion,offencivelist)
+                        val isOffensive=viewModel1.containsOffensiveKeywords(newReply.subComment,offencivelist)
                         if(!isOffensive) {
-                            viewModel1.saveReply(question.id, newReply)
+                            viewModel1.saveReply(question.id, newReply, selectedCategory)
                         }
                         else{
                             Toast.makeText(context,"Offensive keyword detected",Toast.LENGTH_SHORT).show()
@@ -117,10 +181,10 @@ fun AskQuestionForum(
                     },
                     replyingFrom = userName,
                     onDeleteClick = { questionId ->
-                        viewModel1.deleteQuestion(questionId)
+                        viewModel1.deleteQuestion(questionId, selectedCategory)
                     },
                     onDeleteReplyClick = { questionId, replyId ->
-                        viewModel1.deleteReply(questionId, replyId)
+                        viewModel1.deleteReply(questionId, replyId, selectedCategory)
                     },
                     currentUserName = userName
                 )
@@ -138,8 +202,8 @@ fun AskQuestionForum(
                 val offencivelist =viewModel1.loadOffensiveKeywords(context)
                 val isOffensive=viewModel1.containsOffensiveKeywords(newQuestion,offencivelist)
                 if(!isOffensive) {
-                    val newQuestionItem = Question("", userName, newQuestion, emptyList())
-                    viewModel1.saveQuestion(newQuestionItem)
+                    val newQuestionItem = Question("", userName, newQuestion, emptyList(), 0L)
+                    viewModel1.saveQuestion(newQuestionItem, selectedCategory)
                 }
                 else{
                     Toast.makeText(context,"Offensive keyword detected",Toast.LENGTH_SHORT).show()
@@ -171,13 +235,22 @@ fun ExpandableCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = question.userName,
-                    fontSize = 14.sp,
-                    style = MaterialTheme.typography.body1,
-                    maxLines = if (expanded) Int.MAX_VALUE else 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                Row {
+                    Text(
+                        text = question.userName,
+                        fontSize = 14.sp,
+                        style = MaterialTheme.typography.body1,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = formatTimestamp(question.timestamp),
+                        fontSize = 12.sp,
+                        style = MaterialTheme.typography.body2,
+                        color = Color.Gray
+                    )
+                }
                 if (question.userName == currentUserName) {
                     IconButton(onClick = {
                         Log.d("debug", "onDeleteClick(${question.id}ss)")
@@ -207,41 +280,55 @@ fun ExpandableCard(
                             horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
                             Text(
-                                    text = "Reply",
-                                    color = Color.Green,
-                                    modifier = Modifier.clickable { showReplies = !showReplies }
+                                text = "Reply",
+                                color = Color.Green,
+                                modifier = Modifier.clickable { showReplies = !showReplies }
                             )
                         }
                     }
                     if (showReplies) {
-                        question.replies.forEach { reply ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 16.dp, top = 8.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Column {
-                                    Text(
-                                        text = reply.userName,
-                                        fontSize = 10.sp,
-                                        style = MaterialTheme.typography.body2
-                                    )
-                                    Text(
-                                        text = reply.subComment,
-                                        fontSize = 10.sp,
-                                        style = MaterialTheme.typography.body2
-                                    )
-                                }
-                                if (reply.userName == currentUserName) {
-                                    IconButton(onClick = {
-                                        onDeleteReplyClick(question.id, reply.id)
-                                    }) {
-                                        Icon(
-                                            imageVector = Icons.Default.Delete,
-                                            contentDescription = "Delete",
-                                            tint = Color.Red
+                        LazyColumn(modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp)) {
+                            items(question.replies.sortedByDescending { it.timestamp }
+                                .take(4)) { reply ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 16.dp, top = 8.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Column {
+                                        Row {
+                                            Text(
+                                                text = reply.userName,
+                                                fontSize = 10.sp,
+                                                style = MaterialTheme.typography.body2
+                                            )
+                                            Spacer(modifier = Modifier.width(4.dp))
+                                            Text(
+                                                text = formatTimestamp(reply.timestamp),
+                                                fontSize = 8.sp,
+                                                style = MaterialTheme.typography.body2,
+                                                color = Color.Gray
+                                            )
+                                        }
+                                        Text(
+                                            text = reply.subComment,
+                                            fontSize = 10.sp,
+                                            style = MaterialTheme.typography.body2
                                         )
+                                    }
+                                    if (reply.userName == currentUserName) {
+                                        IconButton(onClick = {
+                                            onDeleteReplyClick(question.id, reply.id)
+                                        }) {
+                                            Icon(
+                                                imageVector = Icons.Default.Delete,
+                                                contentDescription = "Delete",
+                                                tint = Color.Red
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -250,7 +337,7 @@ fun ExpandableCard(
                             replyText = replyText,
                             onReplyTextChanged = { replyText = it },
                             onSubmitReply = {
-                                onAddReply(Replies("", replyingFrom, replyText))
+                                onAddReply(Replies("", replyingFrom, replyText, 0L))
                                 replyText = "@${question.userName} "
                             }
                         )
@@ -277,6 +364,39 @@ fun ReplyInput(replyText: String, onReplyTextChanged: (String) -> Unit, onSubmit
             modifier = Modifier.align(Alignment.End)
         ) {
             Text("Submit")
+        }
+    }
+}
+
+
+fun formatTimestamp(timestamp: Long): String {
+    val now = System.currentTimeMillis()
+    val diff = now - timestamp
+
+    return when {
+        diff < TimeUnit.MINUTES.toMillis(1) -> {
+            val seconds = TimeUnit.MILLISECONDS.toSeconds(diff)
+            "$seconds seconds ago"
+        }
+        diff < TimeUnit.HOURS.toMillis(1) -> {
+            val minutes = TimeUnit.MILLISECONDS.toMinutes(diff)
+            "$minutes minutes ago"
+        }
+        diff < TimeUnit.DAYS.toMillis(1) -> {
+            val hours = TimeUnit.MILLISECONDS.toHours(diff)
+            "$hours hours ago"
+        }
+        diff < TimeUnit.DAYS.toMillis(30) -> {
+            val days = TimeUnit.MILLISECONDS.toDays(diff)
+            "$days days ago"
+        }
+        diff < TimeUnit.DAYS.toMillis(365) -> {
+            val months = TimeUnit.MILLISECONDS.toDays(diff) / 30
+            "$months months ago"
+        }
+        else -> {
+            val years = TimeUnit.MILLISECONDS.toDays(diff) / 365
+            "$years years ago"
         }
     }
 }
