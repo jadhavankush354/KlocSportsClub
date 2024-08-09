@@ -8,8 +8,11 @@ import com.firstapplication.file.EquipmentSizeCalculatorByHeight
 
 
 @Composable
-fun ExampleScreen1(controller: NavHostController)
+fun ExampleScreen1(
+                   requiredEquipment: String,
+                   equipmentType: String,
+                   categories: String)
 {
     val viewmodel: SportsEquipmentViewModel = hiltViewModel()
-    EquipmentSizeCalculatorByHeight(viewModel = viewmodel)
+    EquipmentSizeCalculatorByHeight(viewModel = viewmodel,requiredEquipment,equipmentType,categories)
 }

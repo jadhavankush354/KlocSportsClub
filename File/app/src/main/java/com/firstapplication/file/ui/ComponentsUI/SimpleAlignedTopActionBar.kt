@@ -1518,12 +1518,12 @@ fun ClickableSportRow(
 ) {
     val sportImages = listOf(
         R.drawable.theshowmancricket,
-        R.drawable.badmintonshowman,
-        R.drawable.swimmingtheshowman,
-        R.drawable.hockeyshowman,
-        R.drawable.basketballshowman
+//        R.drawable.badmintonshowman,
+//        R.drawable.swimmingtheshowman,
+//        R.drawable.hockeyshowman,
+//        R.drawable.basketballshowman
     )
-    val sports = listOf("Cricket", "Badminton", "Swimming", "Hockey", "Basketball")
+    val sports = listOf("Cricket", /*"Badminton", "Swimming", "Hockey", "Basketball"*/)
     val filteredSports = sports.filter { it.contains(searchQuery, ignoreCase = true) }
     var showExitDialog by remember { mutableStateOf(false)}
     BackHandler {

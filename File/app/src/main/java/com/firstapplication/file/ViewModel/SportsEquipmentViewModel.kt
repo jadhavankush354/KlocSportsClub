@@ -76,17 +76,17 @@ class SportsEquipmentViewModel @Inject constructor(
                                 && equipmentType.equals("Helmet", ignoreCase = true)
                                 && categories.equals("Helmet", ignoreCase = true) -> R.drawable.besthelmetsizeguide
                         _equipmentFound.value && equipment.equals("Shoes", ignoreCase = true)
-                                && equipmentType.equals("Male", ignoreCase = true)
-                                && categories.equals("Spiky", ignoreCase = true) -> R.drawable.ukshoeschart
+                                && equipmentType.equals("Spiky", ignoreCase = true)
+                                && categories.equals("Male", ignoreCase = true) -> R.drawable.ukshoeschart
                         _equipmentFound.value && equipment.equals("Shoes", ignoreCase = true)
-                                && equipmentType.equals("Male", ignoreCase = true)
-                                && categories.equals("Non-Spiky", ignoreCase = true) -> R.drawable.ukshoeschart
+                                && equipmentType.equals("Non-Spiky", ignoreCase = true)
+                                && categories.equals("Male", ignoreCase = true) -> R.drawable.ukshoeschart
                         _equipmentFound.value && equipment.equals("Shoes", ignoreCase = true)
-                                && equipmentType.equals("Female", ignoreCase = true)
-                                && categories.equals("Spiky", ignoreCase = true) -> R.drawable.ukshoeschart
+                                && equipmentType.equals("Spiky", ignoreCase = true)
+                                && categories.equals("Female", ignoreCase = true) -> R.drawable.ukshoeschart
                         _equipmentFound.value && equipment.equals("Shoes", ignoreCase = true)
-                                && equipmentType.equals("Female", ignoreCase = true)
-                                && categories.equals("Non-Spiky", ignoreCase = true) -> R.drawable.ukshoeschart
+                                && equipmentType.equals("Non-Spiky", ignoreCase = true)
+                                && categories.equals("Female", ignoreCase = true) -> R.drawable.ukshoeschart
                         else -> R.drawable.ic_launcher_background
                     }
                 }

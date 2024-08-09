@@ -317,13 +317,14 @@ fun HardTennis(navHostController: NavHostController) {
                                 horizontalArrangement = Arrangement.SpaceEvenly
                             ) {
                                 Button(
-                                    onClick = { navHostController.navigate("ExampleScreen") },
+                                    onClick = { navHostController.navigate("ExampleScreen/Bat/Tennis/HardTennis")
+                                    },
                                     colors = ButtonDefaults.buttonColors(colorResource(id = R.color.purple_200))
                                 ) {
                                     Text(text = "GetByAge")
                                 }
                                 Button(
-                                    onClick = { navHostController.navigate("ExampleScreen1") },
+                                    onClick = { navHostController.navigate("ExampleScreen1/Bat/Tennis/HardTennis") },
                                     colors = ButtonDefaults.buttonColors(colorResource(id = R.color.purple_200))
                                 ) {
                                     Text(text = "GetByHeight")

@@ -55,8 +55,8 @@ android {
 }
 dependencies {
     implementation("androidx.core:core-ktx:1.13.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.3")
-    implementation("androidx.activity:activity-compose:1.9.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")
+    implementation("androidx.activity:activity-compose:1.9.1")
     implementation(platform("androidx.compose:compose-bom:2023.08.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
@@ -82,12 +82,12 @@ dependencies {
     implementation( "com.opencsv:opencsv:5.6")
 
 
-    implementation("com.google.dagger:hilt-android:2.47")
+    implementation("com.google.dagger:hilt-android:2.49")
     kapt("com.google.dagger:hilt-compiler:2.47")
-    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
 
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.4")
 //    Serialization :
     implementation(kotlin("stdlib"))
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
@@ -98,19 +98,19 @@ dependencies {
 
     implementation ("com.airbnb.android:lottie-compose:6.1.0")
 
-    implementation ("androidx.core:core-splashscreen:1.0.0")
+    implementation ("androidx.core:core-splashscreen:1.0.1")
 
     implementation ("com.google.accompanist:accompanist-pager:0.28.0")
     // dependency for physical device
-    implementation ("androidx.work:work-runtime:2.7.0")
+    implementation ("androidx.work:work-runtime:2.9.0")
 
-    implementation ("androidx.compose.ui:ui:1.6.7")
-    implementation ("androidx.compose.material:material:1.6.7")
-    implementation ("androidx.compose.material:material:1.1.0-alpha04")
+    implementation ("androidx.compose.ui:ui:1.6.8")
+    implementation ("androidx.compose.material:material:1.6.8")
+    implementation ("androidx.compose.material:material:1.6.8")
     implementation ("androidx.compose.material:material-icons-extended")
     implementation ("com.google.accompanist:accompanist-adaptive:0.26.3-beta")
     //firebase
-    implementation("com.google.firebase:firebase-firestore:24.10.2")
+    implementation("com.google.firebase:firebase-firestore:25.0.0")
     implementation("com.google.firebase:firebase-database:21.0.0")
     implementation("com.google.firebase:firebase-auth:23.0.0")
     implementation("com.google.firebase:firebase-analytics-ktx:22.0.2")

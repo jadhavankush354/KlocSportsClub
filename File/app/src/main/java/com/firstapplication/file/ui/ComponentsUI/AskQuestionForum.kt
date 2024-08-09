@@ -1,9 +1,12 @@
 package com.firstapplication.file.ui.ComponentsUI
+import android.annotation.SuppressLint
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.DropdownMenuItem
@@ -21,12 +23,14 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -42,9 +46,8 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -53,15 +56,11 @@ import com.firstapplication.file.DataClass.Replies
 import com.firstapplication.file.userAuthentication.firestoredb.viewmodel.FirestoreViewModel
 import com.firstapplication.file.userAuthentication.presentation.profile.ProfileViewModel
 import com.firstapplication.file.userAuthentication.util.ResultState
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
-import java.text.SimpleDateFormat
-import java.util.Locale
-import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 
 //community feed back updated
+@SuppressLint("SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AskQuestionForum(
@@ -73,13 +72,12 @@ fun AskQuestionForum(
     val email = viewModel.currentUser?.takeIf { it.isNotEmpty() } ?: ""
     var userName by remember { mutableStateOf("") }
     var newQuestion by remember { mutableStateOf("") }
-    val categories = listOf("questions", "Cricket", "Bat", "Ball", "Gloves")
-    var selectedCategory by remember { mutableStateOf(categories[0]) }
+    val categories = listOf("Cricket", "Bat", "Ball", "Gloves", "Other")
+    var selectedCategory by remember { mutableStateOf(categories[categories.size-1]) }
     var expanded by remember { mutableStateOf(false) }
     var selectedText by remember { mutableStateOf(selectedCategory) }
     var listOfQuestions by remember { mutableStateOf(emptyList<Question>())}
     var expandedQuestionId by remember { mutableStateOf<String?>(null) }
-
 
     LaunchedEffect(email) {
         if (email.isNotEmpty()) {
@@ -89,7 +87,6 @@ fun AskQuestionForum(
     LaunchedEffect(viewModel1.res1) {
         snapshotFlow { viewModel1.res1.value }.distinctUntilChanged().collect { state -> state.data?.let { user -> userName = user.user?.name ?: "" } }
     }
-
     LaunchedEffect(selectedCategory) {
         viewModel1.fetchQuestions(selectedCategory)
         viewModel1.questionsState.collect { result ->
@@ -101,12 +98,9 @@ fun AskQuestionForum(
         }
     }
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-        TopAppBar(
-            navigationIcon = {
-                IconButton(onClick = { controller.popBackStack() }) {
-                    Icon(imageVector = Icons.Default.ArrowBackIosNew, contentDescription = "Back")
-                }
-            },
+        TopAppBar(navigationIcon = { IconButton(onClick = { controller.popBackStack() }) {
+                    Icon(imageVector = Icons.Default.ArrowBackIosNew, contentDescription = "Back", tint = Color.White)
+                } },
             title = {
                 ExposedDropdownMenuBox(
                 expanded = expanded,
@@ -117,8 +111,9 @@ fun AskQuestionForum(
                     onValueChange = { selectedText = it },
                     readOnly = true,
                     trailingIcon = {
-                        Box(modifier = Modifier.padding(end = 8.dp)) {
-                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                        IconButton(onClick = { expanded = !expanded }) {
+                            if (expanded) Icon(imageVector = Icons.Default.ArrowDropUp, contentDescription = "", tint = Color.White) else
+                            Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = "", tint = Color.White)
                         }
                     },
                     modifier = Modifier.menuAnchor(),
@@ -127,6 +122,11 @@ fun AskQuestionForum(
                         disabledIndicatorColor = Color.Transparent,
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent
+                    ),
+                    textStyle = MaterialTheme.typography.body1.copy(
+                        color = Color.White,
+                        fontSize = 20.sp,
+                        textAlign = TextAlign.Center
                     )
                 )
                 ExposedDropdownMenu(
@@ -148,13 +148,27 @@ fun AskQuestionForum(
             }
             },
             actions = {
-                IconButton(onClick = { viewModel1.deleteAllQuestions(selectedCategory) }) {
-                    Icon(
-                        imageVector = Icons.Default.Delete, // Use a delete icon from material icons
-                        contentDescription = "Delete"
-                    )
+                Row {
+                    IconButton(onClick = { val temp = selectedCategory
+                        selectedCategory = ""
+                        selectedCategory = temp}) {
+                        Icon(
+                            imageVector = Icons.Default.Refresh, // Use a delete icon from material icons
+                            contentDescription = "Refresh",
+                            tint = Color.White
+                        )
+                    }
+                    IconButton(onClick = { viewModel1.deleteAllQuestions(selectedCategory) }) {
+                        Icon(
+                            imageVector = Icons.Default.Delete, // Use a delete icon from material icons
+                            contentDescription = "Delete",
+                            tint = Color.White
+                        )
+                    }
                 }
-            }
+
+            },
+            backgroundColor = Color.Black
         )
         LazyColumn(modifier = Modifier
             .fillMaxWidth()
@@ -233,17 +247,18 @@ fun ExpandableCard(
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Row {
                     Text(
                         text = question.userName,
-                        fontSize = 14.sp,
+                        fontSize = 20.sp,
                         style = MaterialTheme.typography.body1,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
-                    Spacer(modifier = Modifier.width(4.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = formatTimestamp(question.timestamp),
                         fontSize = 12.sp,
@@ -259,14 +274,15 @@ fun ExpandableCard(
                         Icon(
                             imageVector = Icons.Default.Delete,
                             contentDescription = "Delete",
-                            tint = Color.Red
+                            tint = Color.Red,
                         )
                     }
                 }
             }
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = question.comment,
-                fontSize = 12.sp,
+                fontSize = 15.sp,
                 style = MaterialTheme.typography.body1,
                 maxLines = if (expanded) Int.MAX_VALUE else 1,
                 overflow = TextOverflow.Ellipsis
@@ -287,47 +303,56 @@ fun ExpandableCard(
                         }
                     }
                     if (showReplies) {
-                        LazyColumn(modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)) {
-                            items(question.replies.sortedByDescending { it.timestamp }
-                                .take(4)) { reply ->
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 16.dp, top = 8.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Column {
-                                        Row {
+                        BoxWithConstraints(
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            val maxHeight = maxHeight
+                            val replyCount = question.replies.size
+                            val height =
+                                if (replyCount > 4) 200.dp else (replyCount * 50).dp // Adjust item height as needed
+                            LazyColumn(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(height.coerceAtMost(maxHeight))
+                            ) {
+                                items(question.replies.sortedByDescending { it.timestamp }) { reply ->
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(start = 16.dp, top = 8.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Column {
+                                            Row {
+                                                Text(
+                                                    text = reply.userName,
+                                                    fontSize = 15.sp,
+                                                    style = MaterialTheme.typography.body2
+                                                )
+                                                Spacer(modifier = Modifier.width(4.dp))
+                                                Text(
+                                                    text = formatTimestamp(reply.timestamp),
+                                                    fontSize = 12.sp,
+                                                    style = MaterialTheme.typography.body2,
+                                                    color = Color.Gray
+                                                )
+                                            }
                                             Text(
-                                                text = reply.userName,
+                                                text = reply.subComment,
                                                 fontSize = 10.sp,
                                                 style = MaterialTheme.typography.body2
                                             )
-                                            Spacer(modifier = Modifier.width(4.dp))
-                                            Text(
-                                                text = formatTimestamp(reply.timestamp),
-                                                fontSize = 8.sp,
-                                                style = MaterialTheme.typography.body2,
-                                                color = Color.Gray
-                                            )
                                         }
-                                        Text(
-                                            text = reply.subComment,
-                                            fontSize = 10.sp,
-                                            style = MaterialTheme.typography.body2
-                                        )
-                                    }
-                                    if (reply.userName == currentUserName) {
-                                        IconButton(onClick = {
-                                            onDeleteReplyClick(question.id, reply.id)
-                                        }) {
-                                            Icon(
-                                                imageVector = Icons.Default.Delete,
-                                                contentDescription = "Delete",
-                                                tint = Color.Red
-                                            )
+                                        if (reply.userName == currentUserName) {
+                                            IconButton(onClick = {
+                                                onDeleteReplyClick(question.id, reply.id)
+                                            }) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Delete,
+                                                    contentDescription = "Delete",
+                                                    tint = Color.Red
+                                                )
+                                            }
                                         }
                                     }
                                 }
@@ -368,7 +393,6 @@ fun ReplyInput(replyText: String, onReplyTextChanged: (String) -> Unit, onSubmit
     }
 }
 
-
 fun formatTimestamp(timestamp: Long): String {
     val now = System.currentTimeMillis()
     val diff = now - timestamp
@@ -400,3 +424,4 @@ fun formatTimestamp(timestamp: Long): String {
         }
     }
 }
+

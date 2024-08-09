@@ -309,13 +309,14 @@ fun KashmirWillow(navController: NavHostController) {
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         Button(
-                            onClick = { navController.navigate("ExampleScreen") },
+                            onClick = { navController.navigate("ExampleScreen/Bat/Leather/KashmirWillow")
+                            },
                             colors = ButtonDefaults.buttonColors(colorResource(id = R.color.purple_200))
                         ) {
                             Text(text = "Get By Age")
                         }
                         Button(
-                            onClick = { navController.navigate("ExampleScreen1") },
+                            onClick = { navController.navigate("ExampleScreen1/Bat/Leather/KashmirWillow") },
                             colors = ButtonDefaults.buttonColors(colorResource(id = R.color.purple_200))
                         ) {
                             Text(text = "Get By Height")

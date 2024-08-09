@@ -8,8 +8,11 @@ import com.firstapplication.file.ViewModel.SportsEquipmentViewModel
 
 
 @Composable
-fun ExampleScreen(controller: NavHostController)
+fun ExampleScreen(
+                  requiredEquipment: String,
+                  equipmentType: String,
+                  categories: String)
 {
     val viewmodel: SportsEquipmentViewModel = hiltViewModel()
-    EquipmentSizeCalculatorByAge(viewModel = viewmodel)
+    EquipmentSizeCalculatorByAge(viewModel = viewmodel,requiredEquipment,equipmentType,categories)
 }

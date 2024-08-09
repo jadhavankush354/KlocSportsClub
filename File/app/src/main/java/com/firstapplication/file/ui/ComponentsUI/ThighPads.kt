@@ -259,13 +259,14 @@ fun Thaigh(navHostController: NavHostController) {
                                 horizontalArrangement = Arrangement.SpaceEvenly
                             ) {
                                 Button(
-                                    onClick = { navHostController.navigate("ExampleScreen") },
+                                    onClick = {navHostController.navigate("ExampleScreen/ProtectiveGear/Pads/ThighGuards")
+                                    },
                                     colors = ButtonDefaults.buttonColors(colorResource(id = R.color.primaryContainerLight))
                                 ) {
                                     Text(text = "GetByAge")
                                 }
                                 Button(
-                                    onClick = { navHostController.navigate("ExampleScreen1") },
+                                    onClick = { navHostController.navigate("ExampleScreen1/ProtectiveGear/Pads/ThighGuards") },
                                     colors = ButtonDefaults.buttonColors(colorResource(id = R.color.primaryContainerLight))
                                 ) {
                                     Text(text = "GetByHeight")

@@ -24,34 +24,6 @@ import uploadAboutDataToFirebase
 @AndroidEntryPoint
 class MainActivity : ComponentActivity()
 {
-//    override fun onCreate(savedInstanceState: Bundle?)
-//    {
-//        super.onCreate(savedInstanceState)
-//        setContent {
-////            val db = Room.databaseBuilder(
-////                applicationContext,
-////                SportsEquipmentDb::class.java, "Sports_equipment"
-////            ).build()
-////            EquipmentSizeCalculatorByAge(db = db)
-//
-//            NavigationController()
-//
-////            val painter: Painter = painterResource(id = R.drawable.ic_launcher_foreground)
-////            val imageDescription: String = "Image Description"
-////            val imageDescription: String = "Image Description"
-////            DialogWithImage(
-////                onDismissRequest = {
-////                    // Handle dismissal if needed
-////                },
-////                onConfirmation = {
-////                    // Handle confirmation if needed
-////                },
-////                painter = painterResource(id = R.drawable.ic_launcher_foreground),
-////                imageDescription = "Image Description"
-////            )
-////            KashmirWillow()
-//        }
-//    }
 private lateinit var navController: NavHostController
     private val viewModel by viewModels<MainViewModel>()
 
@@ -73,7 +45,6 @@ private lateinit var navController: NavHostController
         uploadAboutDataToFirebase(dataListForAbout)
 
         setContent {
-//            val isInsert = remember { mutableStateOf(false) }
             navController = rememberNavController()
             NavGraph(
                 navController = navController
@@ -129,12 +100,5 @@ private lateinit var navController: NavHostController
             inclusive = true
         }
     }
-//    @Composable
-//    private fun NavigateToAdminDashboard() = navController.navigate(Screen.AdminDashboardScreen.route)
-//    {
-//        popUpTo(navController.graph.id) {
-//            inclusive = true
-//        }
-//    }
 }
 

@@ -263,13 +263,14 @@ fun Gloves(navHostController: NavHostController) {
                                 horizontalArrangement = Arrangement.SpaceEvenly
                             ) {
                                 Button(
-                                    onClick = { navHostController.navigate("ExampleScreen") },
+                                    onClick = { navHostController.navigate("ExampleScreen/ProtectiveGear/Gloves/HandGloves")
+                                    },
                                     colors = ButtonDefaults.buttonColors(colorResource(id = R.color.primaryContainerLight))
                                 ) {
                                     Text(text = "Gloves by Age")
                                 }
                                 Button(
-                                    onClick = { navHostController.navigate("ExampleScreen1") },
+                                    onClick = { navHostController.navigate("ExampleScreen1/ProtectiveGear/Gloves/HandGloves") },
                                     colors = ButtonDefaults.buttonColors(colorResource(id = R.color.primaryContainerLight))
                                 ) {
                                     Text(text = "Gloves by Height")

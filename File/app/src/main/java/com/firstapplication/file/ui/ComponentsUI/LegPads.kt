@@ -266,13 +266,14 @@ fun Legs(navHostController: NavHostController) {
                                 horizontalArrangement = Arrangement.SpaceEvenly
                             ) {
                                 Button(
-                                    onClick = { navHostController.navigate("ExampleScreen") },
+                                    onClick = { navHostController.navigate("ExampleScreen/ProtectiveGear/Pads/LegPads")
+                                    },
                                     colors = ButtonDefaults.buttonColors(colorResource(id = R.color.purple_200))
                                 ) {
                                     Text(text = "LegPadByAge")
                                 }
                                 Button(
-                                    onClick = { navHostController.navigate("ExampleScreen1") },
+                                    onClick = { navHostController.navigate("ExampleScreen1/ProtectiveGear/Pads/LegPads") },
                                     colors = ButtonDefaults.buttonColors(colorResource(id = R.color.purple_200))
                                 ) {
                                     Text(text = "LegPadByHeight")

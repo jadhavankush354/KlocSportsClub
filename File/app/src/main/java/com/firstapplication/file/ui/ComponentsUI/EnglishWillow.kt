@@ -302,13 +302,15 @@ fun EnglishWillow(navController: NavHostController) {
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Button(
-                        onClick = { navController.navigate("ExampleScreen") },
+                        onClick = { navController.navigate("ExampleScreen/Bat/Leather/EnglishWillow")
+
+                        },
                         colors = ButtonDefaults.buttonColors(colorResource(id = R.color.PurpleGrey80))
                     ) {
                         Text(text = "Get By Age")
                     }
                     Button(
-                        onClick = { navController.navigate("ExampleScreen1") },
+                        onClick = { navController.navigate("ExampleScreen1/Bat/Leather/EnglishWillow") },
                         colors = ButtonDefaults.buttonColors(colorResource(id = R.color.PurpleGrey80))
                     ) {
                         Text(text = "Get By Height")

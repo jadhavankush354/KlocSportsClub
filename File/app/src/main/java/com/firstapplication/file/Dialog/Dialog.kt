@@ -35,8 +35,6 @@ import androidx.navigation.NavHostController
 import com.firstapplication.file.DataClass.Enum.DialogType
 import com.firstapplication.file.R
 
-
-
 @Composable
 fun DialogWithImage(
     navController: NavHostController,
@@ -52,12 +50,12 @@ fun DialogWithImage(
             BattingStyleDialog(
                 controller = navController,
                 onDismissRequest = {
-//                    onDismissRequest()
-//                    currentDialog = DialogType.BallTypeDialog
+                    onDismissRequest()
+                    currentDialog = DialogType.BallTypeDialog
                 },
                 onConfirmation = {
-//                    onConfirmation()
-//                    currentDialog = DialogType.BallTypeDialog
+                    onConfirmation()
+                    currentDialog = DialogType.BallTypeDialog
                 },
                 painter = painter,
                 imageDescription = imageDescription
@@ -67,26 +65,9 @@ fun DialogWithImage(
             BallTypeDialog(navController,
                 onDismissRequest = {
                     onDismissRequest()
-                    currentDialog = DialogType.PlayerTypeDialog
+                    currentDialog = DialogType.BatTypeDialog
                 },
                 onConfirmation = { onConfirmation() },
-            )
-        }
-        DialogType.PlayerTypeDialog -> {
-            PlayerTypeDialog(navController,
-                onDismissRequest = { onDismissRequest() },
-                onConfirmationBeginner = {
-                    onConfirmation()
-                    currentDialog = DialogType.BatTypeDialog
-                },
-                onConfirmationIntermediate = {
-                    onConfirmation()
-                    currentDialog = DialogType.BatTypeDialog
-                },
-                onConfirmationAdvanced = {
-                    onConfirmation()
-                    currentDialog = DialogType.BatTypeDialog
-                }
             )
         }
         DialogType.BatTypeDialog -> {
@@ -168,9 +149,7 @@ fun BattingStyleDialog(
                     }
                     TextButton(
                         onClick = {
-
-                           controller.popBackStack()
-//                           controller.navigate("CatogeriesOfEquipments")
+                            controller.navigate("CatogeriesOfEquipments")
                         },
                         modifier = Modifier.padding(8.dp),
                     ) {
@@ -180,11 +159,7 @@ fun BattingStyleDialog(
             }
         }
     }
-
 }
-
-
-
 
 @Composable
 fun BallTypeDialog(
@@ -192,14 +167,16 @@ fun BallTypeDialog(
     onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit,
 ) {
-    val dialogColor= colorResource(id = dev.chrisbanes.snapper.R.color.vector_tint_theme_color)
-    Dialog(onDismissRequest = { onDismissRequest() },
+    val dialogColor = colorResource(id = dev.chrisbanes.snapper.R.color.vector_tint_theme_color)
+    Dialog(
+        onDismissRequest = { onDismissRequest() },
         properties = DialogProperties(
             dismissOnBackPress = false, // Disable dismiss on back press
             dismissOnClickOutside = false // Enable dismiss on click outside
-        )) {
+        )
+    ) {
         BackHandler(onBack = {
-           navController.popBackStack()
+            navController.popBackStack()
         })
         Card(
             modifier = Modifier
@@ -234,7 +211,7 @@ fun BallTypeDialog(
                     }
                     TextButton(
                         onClick = {
-                            // Update this line to trigger the navigation to PlayerTypeDialog
+                            // Update this line to trigger the navigation to TennisBatTypeDialog
                             onConfirmation()
                             navController.navigate("TennisBatTypeDialog")
                         },
@@ -255,77 +232,6 @@ fun BallTypeDialog(
         }
     }
 }
-
-@Composable
-fun PlayerTypeDialog(
-    navHostController: NavHostController,
-    onDismissRequest: () -> Unit,
-    onConfirmationBeginner: () -> Unit,
-    onConfirmationIntermediate: () -> Unit,
-    onConfirmationAdvanced: () -> Unit,
-) {
-    val dialogColor= colorResource(id = R.color.black)
-    Dialog(onDismissRequest = { onDismissRequest() },
-        properties = DialogProperties(
-            dismissOnBackPress = false, // Disable dismiss on back press
-            dismissOnClickOutside = false // Disable dismiss on click outside
-        )) {
-        BackHandler(onBack = {
-            navHostController.popBackStack()
-        })
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(300.dp)
-                .padding(12.dp)
-                .background(dialogColor),
-            shape = RoundedCornerShape(16.dp),
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text(
-                    text = "Choose the player type",
-                    modifier = Modifier.padding(16.dp),
-                )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                ) {
-                    TextButton(
-                        onClick = {
-                            onConfirmationBeginner()
-                        },
-                        modifier = Modifier.padding(4.dp),
-                    ) {
-                        Text("Beginner")
-                    }
-                    TextButton(
-                        onClick = {
-                            onConfirmationIntermediate()
-                        },
-                        modifier = Modifier.padding(4.dp),
-                    ) {
-                        Text("Intermediate")
-                    }
-                    TextButton(
-                        onClick = {
-                            onConfirmationAdvanced()
-                        },
-                        modifier = Modifier.padding(4.dp),
-                    ) {
-                        Text("Advanced")
-                    }
-                }
-            }
-        }
-    }
-}
-
 
 @Composable
 fun BatTypeDialog(
@@ -349,7 +255,7 @@ fun BatTypeDialog(
                 .fillMaxWidth()
                 .height(150.dp),
             shape = RoundedCornerShape(16.dp),
-            color = Color.White
+            color = Color(0xFFCCC2DC)
         ) {
             LazyColumn(
                 modifier = Modifier
@@ -383,7 +289,7 @@ fun TennisBatTypeDialog(
     onConfirmation: (String) -> Unit,
 ) {
     val batTypes = listOf("HardTennisBats", "LowTennisBats")
-    val dialogColor= colorResource(id = R.color.black)
+    val dialogColor = colorResource(id = R.color.black)
 
     Dialog(
         onDismissRequest = onDismissRequest,

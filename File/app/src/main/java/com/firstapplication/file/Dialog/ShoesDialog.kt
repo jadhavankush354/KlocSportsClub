@@ -29,7 +29,6 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import com.firstapplication.file.R
 
-
 @Composable
 fun ShoesDialogues(
     navController: NavHostController,
@@ -39,12 +38,15 @@ fun ShoesDialogues(
     imageDescription: String,
 ) {
     var currentDialog by remember { mutableStateOf<DialogTypes>(DialogTypes.ShoesDialog) }
+    var selectedCategory by remember { mutableStateOf<String?>(null) }
+    var selectedType by remember { mutableStateOf<String?>(null) }
 
     when (currentDialog) {
         DialogTypes.ShoesDialog -> {
             ShoesDialog(
                 navController = navController,
-                onCategorySelected = {
+                onCategorySelected = { category ->
+                    selectedCategory = category
                     currentDialog = DialogTypes.ShoesCatsDialog
                 },
                 onDismiss = {
@@ -56,10 +58,16 @@ fun ShoesDialogues(
             ShoesCatsDialog(
                 navController = navController,
                 onSpiky = {
-                    // Handle spiky selection
+                    selectedType = "Spiky"
+                    val category = selectedCategory ?: ""
+                    val type = selectedType ?: ""
+                    navController.navigate("ShoesSizes/$category/$type")
                 },
                 onNonSpiky = {
-                    // Handle non-spiky selection
+                    selectedType = "Non-Spiky"
+                    val category = selectedCategory ?: ""
+                    val type = selectedType ?: ""
+                    navController.navigate("ShoesSizes/$category/$type")
                 },
                 onDismiss = {
                     onDismissRequest()
@@ -87,7 +95,7 @@ fun ShoesDialog(
     ) {
         BackHandler(onBack = {
             // Handle back button to dismiss dialog
-           navController.popBackStack()
+            navController.popBackStack()
         })
         Card(
             modifier = Modifier
@@ -189,7 +197,7 @@ fun ShoesCatsDialog(
                             TextButton(
                                 onClick = {
                                     onSpiky()
-                                    navController.navigate("ShoesSizes")
+//                                    navController.navigate("ShoesSizes")
                                     onDismiss()
                                 },
                                 modifier = Modifier.padding(8.dp),
@@ -202,7 +210,7 @@ fun ShoesCatsDialog(
                             TextButton(
                                 onClick = {
                                     onNonSpiky()
-                                    navController.navigate("ShoesSizes")
+//                                    navController.navigate("ShoesSizes")
                                     onDismiss()
                                 },
                                 modifier = Modifier.padding(8.dp),

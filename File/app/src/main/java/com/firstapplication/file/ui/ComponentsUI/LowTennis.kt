@@ -314,13 +314,14 @@ fun LowTennis(navHostController: NavHostController) {
                                 horizontalArrangement = Arrangement.SpaceEvenly
                             ) {
                                 Button(
-                                    onClick = { navHostController.navigate("ExampleScreen") },
+                                    onClick = { navHostController.navigate("ExampleScreen/Bat/Tennis/lowTennis")
+                                    },
                                     colors = ButtonDefaults.buttonColors(colorResource(id = R.color.purple_200))
                                 ) {
                                     Text(text = "Get Bat By Age")
                                 }
                                 Button(
-                                    onClick = { navHostController.navigate("ExampleScreen1") },
+                                    onClick = { navHostController.navigate("ExampleScreen1/Bat/Tennis/lowTennis") },
                                     colors = ButtonDefaults.buttonColors(colorResource(id = R.color.purple_200))
                                 ) {
                                     Text(text = "Get Bat By Height")

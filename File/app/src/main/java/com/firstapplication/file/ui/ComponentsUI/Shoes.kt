@@ -40,112 +40,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.firstapplication.file.R
-/*
-@Composable
-fun ShoesSizes(navHostController: NavHostController)
-{
-    Box (Modifier.background(colorResource(id = androidx.core.R.color.call_notification_decline_color))){
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = buildAnnotatedString {
-                    withStyle(
-                        style = SpanStyle(
-                            fontSize = 16.sp,
-                            color = colorResource(id = R.color.black)
-                        )
-                    ) {
-                        append("Here are the following sizes of Shoes\n")
-                    }
-                    append("Recommended based on your playing skills and physical measures")
-                },
-                modifier = Modifier.padding(16.dp)
-            )
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp)
-                    ) {
-                        item {
-                            Image(
-                                painter = painterResource(id = R.drawable.shoeschartc),
-                                contentDescription = "gloves",
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(16.dp)
-                            )
-                            Text(
-                                text = buildAnnotatedString {
-                                    withStyle(
-                                        style = SpanStyle(
-                                            fontSize = 16.sp,
-                                            color = colorResource(id = R.color.black)
-                                        )
-                                    ) {
-                                        append("These are ICC standards for Cricket Shoes\n")
-                                    }
-                                    append("If a player wants them based on his age and height,")
-                                    append("click the button below. Measurements are slightly different, ")
-                                    append("and sizes from UK to US are also slightly different.")
-                                },
-                                modifier = Modifier.padding(16.dp)
-                            )
-
-                        }
-                        item {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(16.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceEvenly
-                            ) {
-                                Button(
-                                    onClick = { navHostController.navigate("ExampleScreen1") },
-                                    modifier = Modifier,
-                                    colors = ButtonDefaults.buttonColors(colorResource(id = androidx.core.R.color.call_notification_decline_color))
-                                ) {
-                                    Text(text = "Get B yHeel to toe length")
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-*/
 
 
 @Composable
-fun ShoesSizes(navHostController: NavHostController) {
+fun ShoesSizes(navController: NavHostController, category: String?, type: String?) {
     var scale by remember { mutableStateOf(1f) } // Zoom scale
     var offsetX by remember { mutableStateOf(0f) } // Horizontal panning
     var offsetY by remember { mutableStateOf(0f) } // Vertical panning
 
-    Box(Modifier.background(androidx.compose.material3.MaterialTheme.colorScheme.onPrimary))
-    {
+    Box(Modifier.background(androidx.compose.material3.MaterialTheme.colorScheme.onPrimary)) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -153,7 +56,7 @@ fun ShoesSizes(navHostController: NavHostController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             BackHandler(onBack = {
-                navHostController.navigate("CatogeriesOfEquipments")
+                navController.navigate("CatogeriesOfEquipments")
             })
             Text(
                 text = buildAnnotatedString {
@@ -165,7 +68,9 @@ fun ShoesSizes(navHostController: NavHostController) {
                     ) {
                         append("Here are the following sizes of Shoes\n")
                     }
-                    append("Recommended based on your playing skills and physical measures")
+                    append("Recommended based on your playing skills and physical measures\n")
+                    append("Category: $category\n")
+                    append("Type: $type")
                 },
                 modifier = Modifier.padding(16.dp)
             )
@@ -251,7 +156,7 @@ fun ShoesSizes(navHostController: NavHostController) {
                                 horizontalArrangement = Arrangement.SpaceEvenly
                             ) {
                                 Button(
-                                    onClick = { navHostController.navigate("ExampleScreen1") },
+                                    onClick = { navController.navigate("ExampleScreen1/Shoes/$category/$type") },
                                     colors = ButtonDefaults.buttonColors(colorResource(id = R.color.primaryDark))
                                 ) {
                                     Text(text = "Get By Heel to Toe Length")

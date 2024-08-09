@@ -261,7 +261,7 @@ fun Helmet(navHostController: NavHostController) {
                                 horizontalArrangement = Arrangement.Center // Center alignment
                             ) {
                                 Button(
-                                    onClick = { navHostController.navigate("ExampleScreen1") },
+                                    onClick = { navHostController.navigate("ExampleScreen1/ProtectiveGear/Helmet/Helmet") },
 //                                    colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(id = R.color.purple_200))
                                 ) {
                                     Text(

@@ -7,6 +7,7 @@ import com.firstapplication.file.userAuthentication.firestoredb.module.Firestore
 import com.firstapplication.file.userAuthentication.util.ResultState
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
@@ -360,21 +361,68 @@ class FirestoreDbRepositoryImpl @Inject constructor(
 
     override fun deleteQuestion(questionId: String, subCategory: String): Flow<ResultState<String>> = callbackFlow {
         trySend(ResultState.Loading)
-        db.collection(subCategory)
-            .document(questionId)
-            .delete()
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    trySend(ResultState.Success("Question deleted successfully."))
+
+        val questionDocRef = db.collection(subCategory).document(questionId)
+        val repliesCollectionRef = questionDocRef.collection("replies")
+
+        // Delete replies sub-collection
+        repliesCollectionRef.get()
+            .addOnCompleteListener { repliesTask ->
+                if (repliesTask.isSuccessful) {
+                    val batch = db.batch()
+                    for (document in repliesTask.result) {
+                        batch.delete(document.reference)
+                    }
+                    batch.commit()
+                        .addOnCompleteListener { batchTask ->
+                            if (batchTask.isSuccessful) {
+                                // Now delete the question document
+                                questionDocRef.delete()
+                                    .addOnCompleteListener { task ->
+                                        if (task.isSuccessful) {
+                                            trySend(ResultState.Success("Question and replies deleted successfully."))
+                                        } else {
+                                            trySend(ResultState.Failure(task.exception ?: Exception("Failed to delete question.")))
+                                        }
+                                    }
+                                    .addOnFailureListener { e ->
+                                        trySend(ResultState.Failure(e))
+                                    }
+                            } else {
+                                trySend(ResultState.Failure(batchTask.exception ?: Exception("Failed to delete replies.")))
+                            }
+                        }
+                        .addOnFailureListener { e ->
+                            trySend(ResultState.Failure(e))
+                        }
                 } else {
-                    trySend(ResultState.Failure(task.exception ?: Exception("Unknown error")))
+                    trySend(ResultState.Failure(repliesTask.exception ?: Exception("Failed to retrieve replies.")))
                 }
             }
             .addOnFailureListener { e ->
                 trySend(ResultState.Failure(e))
             }
+
         awaitClose { close() }
     }
+
+//    override fun deleteQuestion(questionId: String, subCategory: String): Flow<ResultState<String>> = callbackFlow {
+//        trySend(ResultState.Loading)
+//        db.collection(subCategory)
+//            .document(questionId)
+//            .delete()
+//            .addOnCompleteListener { task ->
+//                if (task.isSuccessful) {
+//                    trySend(ResultState.Success("Question deleted successfully."))
+//                } else {
+//                    trySend(ResultState.Failure(task.exception ?: Exception("Unknown error")))
+//                }
+//            }
+//            .addOnFailureListener { e ->
+//                trySend(ResultState.Failure(e))
+//            }
+//        awaitClose { close() }
+//    }
 
     override fun deleteReply(questionId: String, replyId: String, subCategory: String): Flow<ResultState<String>> = callbackFlow {
         trySend(ResultState.Loading)
@@ -399,27 +447,78 @@ class FirestoreDbRepositoryImpl @Inject constructor(
         awaitClose { close() }
     }
 
+
     override fun deleteAllQuestions(subCategory: String): Flow<ResultState<String>> = callbackFlow {
         trySend(ResultState.Loading)
 
-        // Fetch all questions
+        // Fetch all questions in the subCategory
         db.collection(subCategory)
             .get()
             .addOnSuccessListener { snapshot ->
-                // Create a batch to delete all questions
                 val batch = db.batch()
 
-                snapshot.forEach { document ->
-                    batch.delete(document.reference)
+                val tasks = snapshot.map { document ->
+                    val repliesCollectionRef = document.reference.collection("replies")
+
+                    repliesCollectionRef.get()
+                        .continueWith { repliesTask ->
+                            if (repliesTask.isSuccessful) {
+                                repliesTask.result?.forEach { replyDoc ->
+                                    batch.delete(replyDoc.reference)
+                                }
+                            }
+                            // Add the deletion of the main question document to the batch
+                            batch.delete(document.reference)
+                        }
                 }
 
-                // Commit the batch
-                batch.commit()
-                    .addOnSuccessListener { trySend(ResultState.Success("All questions deleted successfully.")) }
-                    .addOnFailureListener { trySend(ResultState.Failure(it)) }
+                // Wait for all tasks to complete
+                Tasks.whenAll(tasks)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            batch.commit()
+                                .addOnSuccessListener {
+                                    trySend(ResultState.Success("All questions and their replies deleted successfully."))
+                                }
+                                .addOnFailureListener { e ->
+                                    trySend(ResultState.Failure(e))
+                                }
+                        } else {
+                            trySend(ResultState.Failure(task.exception ?: Exception("Failed to delete all questions and replies.")))
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        trySend(ResultState.Failure(e))
+                    }
             }
-            .addOnFailureListener { trySend(ResultState.Failure(it)) }
+            .addOnFailureListener { e ->
+                trySend(ResultState.Failure(e))
+            }
 
         awaitClose { close() }
     }
+
+//    override fun deleteAllQuestions(subCategory: String): Flow<ResultState<String>> = callbackFlow {
+//        trySend(ResultState.Loading)
+//
+//        // Fetch all questions
+//        db.collection(subCategory)
+//            .get()
+//            .addOnSuccessListener { snapshot ->
+//                // Create a batch to delete all questions
+//                val batch = db.batch()
+//
+//                snapshot.forEach { document ->
+//                    batch.delete(document.reference)
+//                }
+//
+//                // Commit the batch
+//                batch.commit()
+//                    .addOnSuccessListener { trySend(ResultState.Success("All questions deleted successfully.")) }
+//                    .addOnFailureListener { trySend(ResultState.Failure(it)) }
+//            }
+//            .addOnFailureListener { trySend(ResultState.Failure(it)) }
+//
+//        awaitClose { close() }
+//    }
 }

@@ -1,17 +1,16 @@
 package com.firstapplication.file.userAuthentication.navigation
 
 import FetchDataScreenofAboutScreen
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.firstapplication.file.Dialog.BatTypeDialog
 import com.firstapplication.file.CatogeriesOfEquipments
 import com.firstapplication.file.ui.ComponentsUI.AskQuestionForum
@@ -34,7 +33,6 @@ import com.firstapplication.file.Dialog.ShoesCatsDialog
 import com.firstapplication.file.Dialog.ShoesDialog
 import com.firstapplication.file.Dialog.ShoesDialogues
 import com.firstapplication.file.Dialog.DialogWithImage
-import com.firstapplication.file.EquipmentSizeCalculatorByAge
 import com.firstapplication.file.ExampleScreen
 import com.firstapplication.file.ExampleScreen1
 import com.firstapplication.file.HomeScreen
@@ -42,7 +40,6 @@ import com.firstapplication.file.MainActivity
 import com.firstapplication.file.R
 import com.firstapplication.file.SplashScreen.SplashScreen
 import com.firstapplication.file.Dialog.TennisBatTypeDialog
-import com.firstapplication.file.ViewModel.SportsEquipmentViewModel
 import com.firstapplication.file.userAuthentication.navigation.Screen.SignInScreen
 import com.firstapplication.file.userAuthentication.navigation.Screen.ForgotPasswordScreen
 import com.firstapplication.file.userAuthentication.navigation.Screen.SignUpScreen
@@ -52,7 +49,6 @@ import com.firstapplication.file.userAuthentication.presentation.sign_in.SignInS
 import com.firstapplication.file.userAuthentication.presentation.sign_up.SignUpScreen
 import com.firstapplication.file.userAuthentication.presentation.verify_email.VerifyEmailScreen
 import com.firstapplication.file.Dialog.BallD
-
 
 @Composable
 @ExperimentalComposeUiApi
@@ -92,10 +88,40 @@ fun NavGraph(
             )
         }
         composable("BatTypeDialog") { BatTypeDialog(navController = navController, onDismissRequest = {}, onConfirmation = {}) }
-        composable("EquipmentSizeCalculatorByAge") {EquipmentSizeCalculatorByAge(viewModel = hiltViewModel<SportsEquipmentViewModel>()) }
+//        composable("EquipmentSizeCalculatorByAge") {EquipmentSizeCalculatorByAge(viewModel = hiltViewModel<SportsEquipmentViewModel>()) }
         composable("KashmirWillow") { KashmirWillow(navController) }
-        composable("ExampleScreen") { ExampleScreen(navController) }
-        composable("ExampleScreen1") { ExampleScreen1(controller = navController) }
+        composable(
+            route = "ExampleScreen/{requiredEquipment}/{equipmentType}/{categories}",
+            arguments = listOf(
+                navArgument("requiredEquipment") { type = NavType.StringType },
+                navArgument("equipmentType") { type = NavType.StringType },
+                navArgument("categories") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val requiredEquipment = backStackEntry.arguments?.getString("requiredEquipment") ?: ""
+            val equipmentType = backStackEntry.arguments?.getString("equipmentType") ?: ""
+            val categories = backStackEntry.arguments?.getString("categories") ?: ""
+
+            ExampleScreen(
+                requiredEquipment = requiredEquipment,
+                equipmentType = equipmentType,
+                categories = categories
+            )
+        }
+        composable(
+            route = "ExampleScreen1/{requiredEquipment}/{equipmentType}/{categories}",
+            arguments = listOf(
+                navArgument("requiredEquipment") { type = NavType.StringType },
+                navArgument("equipmentType") { type = NavType.StringType },
+                navArgument("categories") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val requiredEquipment = backStackEntry.arguments?.getString("requiredEquipment") ?: ""
+            val equipmentType = backStackEntry.arguments?.getString("equipmentType") ?: ""
+            val categories = backStackEntry.arguments?.getString("categories") ?: ""
+            ExampleScreen1(requiredEquipment, equipmentType, categories)
+        }
+
         composable("EnglishWillow") { EnglishWillow(navController) }
         composable("MangooseBats") { MangooseBats(navController) }
         composable("TennisBatTypeDialog") { TennisBatTypeDialog(navController, onDismissRequest = { }, onConfirmation = {}) }
@@ -132,10 +158,22 @@ fun NavGraph(
         composable("ShoesDialog") {
             ShoesDialog(navController = navController, onCategorySelected = {}, onDismiss = {})
         }
-        composable("ShoesSizes") { ShoesSizes(navController) }
         composable("ShoesCatsDialog") {
             ShoesCatsDialog(navController = navController, onSpiky = {}, onNonSpiky = {}, onDismiss = { navController.popBackStack() })
         }
+        composable(
+            route = "ShoesSizes/{category}/{type}",
+            arguments = listOf(
+                navArgument("category") { type = NavType.StringType },
+                navArgument("type") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val category = backStackEntry.arguments?.getString("category")
+            val type = backStackEntry.arguments?.getString("type")
+            ShoesSizes(navController = navController, category = category, type = type)
+        }
+
+
         composable("HardTennis") { HardTennis(navController) }
         composable("LowTennis") { LowTennis(navController) }
         composable("AskQuestionForum") { AskQuestionForum(navController) }
@@ -144,5 +182,8 @@ fun NavGraph(
         composable("FetchDataScreenofAboutScreen") { FetchDataScreenofAboutScreen(navController) }
     }
 }
+
+
+
 
 

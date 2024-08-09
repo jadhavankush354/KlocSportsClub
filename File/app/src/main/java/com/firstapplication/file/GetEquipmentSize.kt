@@ -78,32 +78,15 @@ import com.firstapplication.file.ViewModel.SportsEquipmentViewModel
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun EquipmentSizeCalculatorByAge(viewModel: SportsEquipmentViewModel) {
+fun EquipmentSizeCalculatorByAge(
+    viewModel: SportsEquipmentViewModel,
+    requiredEquipment: String,
+    equipmentType: String,
+    categories: String
+) {
     var playerAge by remember { mutableStateOf(0) }
-    var selectedEquipment by remember { mutableStateOf("") }
-    var selectedEquipmentType by remember { mutableStateOf("") }
-    var selectedCategory by remember { mutableStateOf("") }
 
-    val equipmentOptions = listOf("Bat", "ProtectiveGear")
-    val equipmentTypeMap = mapOf(
-        "Bat" to listOf("Leather", "Tennis"),
-        "ProtectiveGear" to listOf("Gloves", "Pads", "Helmet"),
-        "Shoes" to listOf("Male", "Female")
-    )
-    val categoriesMap = mapOf(
-        "Leather" to listOf("KashmirWillow", "EnglishWillow", "LongHandleBats"),
-        "Tennis" to listOf("HardTennis", "lowTennis"),
-        "Gloves" to listOf("HandGloves"),
-        "Pads" to listOf("LegPads", "ThighGuards"),
-        "Helmet" to listOf("Helmet"),
-    )
-
-    val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
-
-    var expandedEquipment by remember { mutableStateOf(false) }
-    var expandedEquipmentType by remember { mutableStateOf(false) }
-    var expandedCategory by remember { mutableStateOf(false) }
 
     var zoomLevel by remember { mutableStateOf(1f) } // Zoom level for images
     var offsetX by remember { mutableStateOf(0f) } // Horizontal offset for panning
@@ -125,141 +108,35 @@ fun EquipmentSizeCalculatorByAge(viewModel: SportsEquipmentViewModel) {
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            ExposedDropdownMenuBox(
-                expanded = expandedEquipment,
-                onExpandedChange = { expandedEquipment = it }
-            ) {
-                TextField(
-                    value = selectedEquipment,
-                    onValueChange = { newEquipment ->
-                        if (newEquipment != selectedEquipment) {
-                            selectedEquipment = newEquipment
-                            // Reset dependent selections
-                            selectedEquipmentType = ""
-                            selectedCategory = ""
-                            playerAge = 0  // Reset the age if needed
-                            viewModel.resetEquipmentDetails()  // Clear or reset view model state if such a function exists
-                        }
-                    },
-                    label = { Text(text = "Please Select required Equipment") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedEquipment) },
-                    modifier = Modifier
-                        .menuAnchor()
-                        .padding(20.dp),
-                    readOnly = true  // Set the TextField as readOnly to prevent user typing
-                )
-                ExposedDropdownMenu(
-                    expanded = expandedEquipment,
-                    onDismissRequest = { expandedEquipment = false }
-                ) {
-                    equipmentOptions.forEach { item ->
-                        DropdownMenuItem(
-                            onClick = {
-                                if (item != selectedEquipment) {  // Check if the item selected is different
-                                    selectedEquipment = item
-                                    // Reset all related fields when a new item is selected
-                                    selectedEquipmentType = ""
-                                    selectedCategory = ""
-                                    playerAge = 0
-                                    viewModel.resetEquipmentDetails()
-                                }
-                                expandedEquipment = false
-                                Toast.makeText(context, item, Toast.LENGTH_SHORT).show()
-                            }
-                        ) {
-                            Text(text = item)
-                        }
-                    }
-                }
-            }
+            TextField(
+                value = requiredEquipment,
+                onValueChange = {},
+                label = { Text(text = "Required Equipment") },
+                readOnly = true,  // Set the TextField as readOnly
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp)
+            )
 
-            ExposedDropdownMenuBox(
-                expanded = expandedEquipmentType,
-                onExpandedChange = { expandedEquipmentType = it }
-            ) {
-                TextField(
-                    value = selectedEquipmentType,
-                    onValueChange = { newEquipmentType ->
-                        if (newEquipmentType != selectedEquipmentType) {
-                            selectedEquipmentType = newEquipmentType
-                            // Reset dependent selections
-                            selectedCategory = ""
-                            playerAge = 0  // Reset the age if needed
-                            viewModel.resetEquipmentDetails()  // Clear or reset view model state if such a function exists
-                        }
-                    },
-                    label = { Text(text = "Please Select Equipment Type") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedEquipmentType) },
-                    modifier = Modifier
-                        .menuAnchor()
-                        .padding(20.dp)
-                )
-                val filteredEquipmentTypes =
-                    equipmentTypeMap[selectedEquipment]?.filter { it.contains(selectedEquipmentType, ignoreCase = true) } ?: emptyList()
+            TextField(
+                value = equipmentType,
+                onValueChange = {},
+                label = { Text(text = "Equipment Type") },
+                readOnly = true,  // Set the TextField as readOnly
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp)
+            )
 
-                if (filteredEquipmentTypes.isNotEmpty()) {
-                    ExposedDropdownMenu(
-                        expanded = expandedEquipmentType,
-                        onDismissRequest = { expandedEquipmentType = false }
-                    ) {
-                        filteredEquipmentTypes.forEach { item ->
-                            DropdownMenuItem(
-                                onClick = {
-                                    selectedEquipmentType = item
-                                    expandedEquipmentType = false
-                                    Toast.makeText(context, item, Toast.LENGTH_SHORT).show()
-                                    viewModel.resetEquipmentDetails()
-                                }
-                            ) {
-                                Text(text = item)
-                            }
-                        }
-                    }
-                }
-            }
-
-            ExposedDropdownMenuBox(
-                expanded = expandedCategory,
-                onExpandedChange = { expandedCategory = it }
-            ) {
-                TextField(
-                    value = selectedCategory,
-                    onValueChange = { selectedCategory = it },
-                    label = { Text(text = "Please Select Categories") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCategory) },
-                    modifier = Modifier
-                        .menuAnchor()
-                        .padding(20.dp)
-                )
-                val filteredCategories =
-                    categoriesMap[selectedEquipmentType]?.filter { it.contains(selectedCategory, ignoreCase = true) }
-                        ?: emptyList()
-
-                if (filteredCategories.isNotEmpty()) {
-                    ExposedDropdownMenu(
-                        expanded = expandedCategory,
-                        onDismissRequest = { expandedCategory = false }
-                    ) {
-                        filteredCategories.forEach { category ->
-                            DropdownMenuItem(
-                                onClick = {
-                                    selectedCategory = category
-                                    expandedCategory = false
-                                    Toast.makeText(context, category, Toast.LENGTH_SHORT).show()
-                                }
-                            ) {
-                                Text(text = category)
-                            }
-                        }
-                    }
-                }
-            }
-
-            LaunchedEffect(key1 = selectedEquipment) {
-                if (selectedEquipment.isEmpty()) {
-                    playerAge = 0
-                }
-            }
+            TextField(
+                value = categories,
+                onValueChange = {},
+                label = { Text(text = "Categories") },
+                readOnly = true,  // Set the TextField as readOnly
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp)
+            )
 
             OutlinedTextField(
                 value = playerAge.toString(),
@@ -285,9 +162,9 @@ fun EquipmentSizeCalculatorByAge(viewModel: SportsEquipmentViewModel) {
             Button(
                 onClick = {
                     viewModel.getEquipmentSizeByAge(
-                        selectedEquipment,
-                        selectedEquipmentType,
-                        selectedCategory,
+                        requiredEquipment,
+                        equipmentType,
+                        categories,
                         playerAge
                     )
                 },
@@ -297,7 +174,7 @@ fun EquipmentSizeCalculatorByAge(viewModel: SportsEquipmentViewModel) {
             ) {
                 Icon(imageVector = Icons.Filled.Send, contentDescription = "")
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "Get $selectedEquipment", color = Color.White)
+                Text(text = "Get $requiredEquipment", color = Color.White)
             }
 
             Card(
@@ -314,18 +191,18 @@ fun EquipmentSizeCalculatorByAge(viewModel: SportsEquipmentViewModel) {
                     val equipmentSize by viewModel.equipmentSize.collectAsState()
                     val equipmentImageResId by viewModel.equipmentImageResId.collectAsState()
 
-                    if (equipmentFound && selectedEquipment.isNotEmpty()) {
+                    if (equipmentFound && requiredEquipment.isNotEmpty()) {
                         Text(
-                            text = "Suggested Equipment is: $selectedEquipment and length is $equipmentSize ",
+                            text = "Suggested Equipment is: $requiredEquipment and length is $equipmentSize ",
                             color = Color.Black,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(8.dp).background(Color.Yellow)
                         )
                         when {
-                            selectedEquipment.equals("Bat", ignoreCase = true) ||
-                                    selectedEquipment.equals("Ball", ignoreCase = true) ||
-                                    selectedEquipment.equals("ProtectiveGear", ignoreCase = true) -> {
+                            requiredEquipment.equals("Bat", ignoreCase = true) ||
+                                    requiredEquipment.equals("Ball", ignoreCase = true) ||
+                                    requiredEquipment.equals("ProtectiveGear", ignoreCase = true) -> {
                                 Image(
                                     painter = painterResource(equipmentImageResId),
                                     contentDescription = null,
@@ -372,49 +249,7 @@ fun EquipmentSizeCalculatorByAge(viewModel: SportsEquipmentViewModel) {
 
 
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DropdownSelector(
-    label: String,
-    value: String,
-    options: List<String>,
-    expanded: Boolean,
-    onExpandedChange: (Boolean) -> Unit,
-    onValueChange: (String) -> Unit,
-    context: Context
-) {
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = onExpandedChange
-    ) {
-        TextField(
-            value = value,
-            onValueChange = { },
-            label = { Text(text = label) },
-            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            readOnly = true,
-            modifier = Modifier
-                .menuAnchor()
-                .padding(20.dp)
-        )
-        ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { onExpandedChange(false) }
-        ) {
-            options.forEach { item ->
-                DropdownMenuItem(
-                    onClick = {
-                        onValueChange(item)
-                        onExpandedChange(false)
-                        Toast.makeText(context, item, Toast.LENGTH_SHORT).show()
-                    }
-                ) {
-                    Text(text = item)
-                }
-            }
-        }
-    }
-}
+
 
 
 
@@ -479,648 +314,22 @@ fun ResultCard(equipmentFound: Boolean, equipmentSize: String?, equipmentImageRe
 }
 
 
-/*
-@SuppressLint("UnusedBoxWithConstraintsScope")
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
-@Composable
-fun EquipmentSizeCalculatorByHeight(viewModel: SportsEquipmentViewModel) {
-    var playerHeight by remember { mutableStateOf(0.0) }
-    var selectedEquipment by remember { mutableStateOf("") }
-    var selectedEquipmentType by remember { mutableStateOf("") }
-    var selectedCategory by remember { mutableStateOf("") }
 
-    val equipmentOptions = listOf("Bat", "Ball", "ProtectiveGear", "Shoes")
-    val typeOfEquipmentOptions = listOf("Leather", "Tennis", "Male", "Female", "Gloves", "Pads", "Helmet")
-    val categoriesOptions = listOf(
-        "KashmirWillow", "EnglishWillow", "HandGloves", "LegPads",
-        "ThighGuards", "Helmet", "Spiky", "Non-Spiky"
-    )
-
-    val context = LocalContext.current
-    val keyboardController = LocalSoftwareKeyboardController.current
-
-    var expandedEquipment by remember { mutableStateOf(false) }
-    var expandedEquipmentType by remember { mutableStateOf(false) }
-    var expandedCategory by remember { mutableStateOf(false) }
-    var expandedHeight by remember { mutableStateOf(false) }
-
-    BoxWithConstraints(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        val backgroundImage = painterResource(R.drawable.splashscreen) // Replace with your image resource
-        BackgroundImage(
-            painter = backgroundImage,
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-
-            // Equipment Dropdown
-            ExposedDropdownMenuBox(
-                expanded = expandedEquipment,
-                onExpandedChange = { expandedEquipment = it }
-            ) {
-                TextField(
-                    value = selectedEquipment,
-                    onValueChange = { selectedEquipment = it },
-                    label = { Text(text = "Please Select required Equipment") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedEquipment) },
-                    modifier = Modifier
-                        .menuAnchor()
-                        .padding(20.dp)
-                )
-
-                val filteredOptions =
-                    equipmentOptions.filter { it.contains(selectedEquipment, ignoreCase = true) }
-
-                if (filteredOptions.isNotEmpty()) {
-                    ExposedDropdownMenu(
-                        expanded = expandedEquipment,
-                        onDismissRequest = { expandedEquipment = false }
-                    ) {
-                        filteredOptions.forEach { item ->
-                            DropdownMenuItem(
-                                onClick = {
-                                    selectedEquipment = item
-                                    expandedEquipment = false
-                                    Toast.makeText(context, item, Toast.LENGTH_SHORT).show()
-                                }
-                            ) {
-                                Text(text = item)
-                            }
-                        }
-                    }
-                }
-            }
-
-            val equipmentTypeMap = mapOf(
-                "Bat" to listOf("Leather", "Tennis"),
-                "Ball" to listOf("Leather", "Tennis"),
-                "ProtectiveGear" to listOf("Gloves", "Pads", "Helmet"),
-                "Shoes" to listOf("Male", "Female")
-            )
-
-
-            ExposedDropdownMenuBox(
-                expanded = expandedEquipmentType,
-                onExpandedChange = { expandedEquipmentType = it }
-            ) {
-                TextField(
-                    value = selectedEquipmentType,
-                    onValueChange = { selectedEquipmentType = it },
-                    label = { Text(text = "Please Select Equipment Type") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedEquipmentType) },
-                    modifier = Modifier
-                        .menuAnchor()
-                        .padding(20.dp)
-                )
-
-                val filteredEquipmentTypes =
-                    equipmentTypeMap[selectedEquipment]?.filter { it.contains(selectedEquipmentType, ignoreCase = true) } ?: emptyList()
-
-                if (filteredEquipmentTypes.isNotEmpty()) {
-                    ExposedDropdownMenu(
-                        expanded = expandedEquipmentType,
-                        onDismissRequest = { expandedEquipmentType = false }
-                    ) {
-                        filteredEquipmentTypes.forEach { item ->
-                            DropdownMenuItem(
-                                onClick = {
-                                    selectedEquipmentType = item
-                                    expandedEquipmentType = false
-                                    Toast.makeText(context, item, Toast.LENGTH_SHORT).show()
-                                }
-                            ) {
-                                Text(text = item)
-                            }
-                        }
-                    }
-                }
-            }
-
-            val categoriesMap = mapOf(
-                "Leather" to listOf("KashmirWillow", "EnglishWillow","LongHandleBats"),
-                "Tennis" to listOf("HardTennis", "SoftTennis"),
-                "Gloves" to listOf("HandGloves"),
-                "Pads" to listOf("LegPads", "ThighGuards"),
-                "Helmet" to listOf("Helmet"),
-                "Male" to listOf("Spiky","Non-Spiky"),
-                "Female" to listOf("Spiky","Non-Spiky")
-            )
-
-            ExposedDropdownMenuBox(
-                expanded = expandedCategory,
-                onExpandedChange = { expandedCategory = it }
-            ) {
-                TextField(
-                    value = selectedCategory,
-                    onValueChange = { selectedCategory = it },
-                    label = { Text(text = "Please Select Categories") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCategory) },
-                    modifier = Modifier
-                        .menuAnchor()
-                        .padding(20.dp)
-                )
-
-
-                val filteredCategories =
-                    categoriesMap[selectedEquipmentType]?.filter { it.contains(selectedCategory, ignoreCase = true) }
-                        ?: emptyList()
-
-                if (filteredCategories.isNotEmpty()) {
-                    ExposedDropdownMenu(
-                        expanded = expandedCategory,
-                        onDismissRequest = { expandedCategory = false }
-                    ) {
-                        filteredCategories.forEach { category ->
-                            DropdownMenuItem(
-                                onClick = {
-                                    selectedCategory = category
-                                    expandedCategory = false
-                                    Toast.makeText(context, category, Toast.LENGTH_SHORT).show()
-                                }
-                            ) {
-                                Text(text = category)
-                            }
-                        }
-                    }
-                }
-            }
-
-//            OutlinedTextField(
-//                value = playerHeight.toString(),
-//                onValueChange = { input ->
-//                    playerHeight = input.toDoubleOrNull() ?: 0.0
-//                },
-//                label = { Text(if (selectedEquipment.equals("Shoes", ignoreCase = true)) "Heel to Toe Length in cm" else "Player Height", color = Color.Yellow) },
-//                placeholder = { Text(if (selectedEquipment.equals("Shoes", ignoreCase = true)) "Enter heel to toe ratio" else "Height") },
-//                textStyle = TextStyle(color = Color.Yellow),
-//                keyboardOptions = KeyboardOptions.Default.copy(
-//                    keyboardType = KeyboardType.Number,
-//                    imeAction = ImeAction.Done
-//                ),
-//                keyboardActions = KeyboardActions(
-//                    onDone = {
-//                        keyboardController?.hide()
-//                    }
-//                ),
-//                modifier = Modifier.padding(bottom = 8.dp)
-//            )
-//            Text(
-//                text = "Please mention height in feet (e.g., 5.5)",
-//                color = Color.Yellow,
-//                modifier = Modifier.padding(bottom = 8.dp)
-//            )
-            if (selectedEquipment.equals("Shoes", ignoreCase = true)) {
-                OutlinedTextField(
-                    value = playerHeight.toString(),
-                    onValueChange = { input ->
-                        playerHeight = input.toDoubleOrNull() ?: 0.0
-                    },
-                    label = { Text(text = "Heel to Toe Length in cm", color = Color.Yellow) },
-                    placeholder = { Text(text = "Enter heel to toe ratio", color = Color.Yellow) },
-                    textStyle = TextStyle(color = Color.Yellow),
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Done
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            keyboardController?.hide()
-                        }
-                    ),
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-                Text(
-                    text = "Please mention heel to toe Length in cm",
-                    color = Color.Yellow,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-            } else {
-                // Dropdown menu for heights
-                var selectedHeight by remember { mutableStateOf("") }
-                val heightOptions = (35..70).map { it.toDouble() / 10 }.map { it.toString() } // Add more options as needed
-
-                ExposedDropdownMenuBox(
-                    expanded = expandedHeight,
-                    onExpandedChange = { expandedHeight = it }
-                ) {
-                    TextField(
-                        value = selectedHeight,
-                        onValueChange = { selectedHeight = it },
-                        label = { Text("Please Select Height", color = Color.White) },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedHeight) },
-                        modifier = Modifier
-                            .menuAnchor()
-                            .padding(20.dp)
-                    )
-
-                    ExposedDropdownMenu(
-                        expanded = expandedHeight,
-                        onDismissRequest = { expandedHeight = false }
-                    ) {
-                        heightOptions.forEach { item ->
-                            DropdownMenuItem(
-                                onClick = {
-                                    selectedHeight = item
-                                    expandedHeight = false
-                                    playerHeight = item.toDoubleOrNull() ?: 0.0
-                                    Toast.makeText(context, item, Toast.LENGTH_SHORT).show()
-                                }
-                            ) {
-                                Text(text = item)
-                            }
-                        }
-                    }
-                }
-            }
-
-            Button(
-                onClick = {
-                    viewModel.getEquipmentSizeByHeight(
-                        selectedEquipment,
-                        selectedEquipmentType,
-                        selectedCategory,
-                        playerHeight
-                    )
-                },
-                modifier = Modifier
-                    .padding(bottom = 8.dp)
-                ) {
-                Icon(imageVector = Icons.Default.Send, contentDescription = null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "Get $selectedEquipment", color = Color.White)
-            }
-
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    val equipmentFound by viewModel.equipmentFound.collectAsState()
-                    val equipmentSize by viewModel.equipmentSize.collectAsState()
-                    val equipmentImageResId by viewModel.equipmentImageResId.collectAsState()
-
-                    if (equipmentFound) {
-                        Text(
-                            text = "Suggested Equipment is: $selectedEquipment and length is $equipmentSize ",
-                            color = Color.Black,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp)
-                        )
-
-                        when {
-                            selectedEquipment.equals("Bat", ignoreCase = true) ||
-                                    selectedEquipment.equals("Ball", ignoreCase = true) ||
-                                    selectedEquipment.equals("ProtectiveGear", ignoreCase = true) -> {
-                                Image(
-                                    painter = painterResource(equipmentImageResId),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .size(width = 450.dp, height = 500.dp)
-                                        .padding(8.dp)
-                                        .fillMaxWidth()
-                                )
-                            }
-                        }
-                    } else {
-                        Text(
-                            text = "Equipment not found for the entered details.",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp)
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-*/
-
-/*
-@SuppressLint("UnusedBoxWithConstraintsScope")
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
-@Composable
-fun EquipmentSizeCalculatorByHeight(viewModel: SportsEquipmentViewModel) {
-    var playerHeight by remember { mutableStateOf(0.0) }
-    var selectedEquipment by remember { mutableStateOf("") }
-    var selectedEquipmentType by remember { mutableStateOf("") }
-    var selectedCategory by remember { mutableStateOf("") }
-
-    val equipmentOptions = listOf("Bat", "ProtectiveGear", "Shoes")
-    val typeOfEquipmentOptions = listOf("Leather", "Tennis", "Male", "Female", "Gloves", "Pads", "Helmet")
-    val categoriesOptions = listOf(
-        "KashmirWillow", "EnglishWillow", "HandGloves", "LegPads",
-        "ThighGuards", "Helmet", "Spiky", "Non-Spiky"
-    )
-
-    val context = LocalContext.current
-    val keyboardController = LocalSoftwareKeyboardController.current
-
-    var expandedEquipment by remember { mutableStateOf(false) }
-    var expandedEquipmentType by remember { mutableStateOf(false) }
-    var expandedCategory by remember { mutableStateOf(false) }
-
-    BoxWithConstraints(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        val backgroundImage = painterResource(R.drawable.splashscreen) // Replace with your image resource
-        BackgroundImage(
-            painter = backgroundImage,
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            ExposedDropdownMenuBox(
-                expanded = expandedEquipment,
-                onExpandedChange = { expandedEquipment = it }
-            ) {
-                TextField(
-                    value = selectedEquipment,
-                    onValueChange = { newEquipment ->
-                        if (newEquipment != selectedEquipment) {
-                            selectedEquipment = newEquipment
-                            // Reset dependent selections
-                            selectedEquipmentType = ""
-                            selectedCategory = ""
-                            playerHeight = 0.0  // Reset the height if needed
-                            viewModel.resetEquipmentDetails()  // Clear or reset view model state if such a function exists
-                        }
-                    },
-                    label = { Text(text = "Please Select required Equipment") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedEquipment) },
-                    modifier = Modifier
-                        .menuAnchor()
-                        .padding(20.dp),
-                    readOnly = true  // Set the TextField as readOnly to prevent user typing
-                )
-                ExposedDropdownMenu(
-                    expanded = expandedEquipment,
-                    onDismissRequest = { expandedEquipment = false }
-                ) {
-                    equipmentOptions.forEach { item ->
-                        DropdownMenuItem(
-                            onClick = {
-                                if (item != selectedEquipment) {  // Check if the item selected is different
-                                    selectedEquipment = item
-                                    // Reset all related fields when a new item is selected
-                                    selectedEquipmentType = ""
-                                    selectedCategory = ""
-                                    playerHeight = 0.0
-                                    viewModel.resetEquipmentDetails()
-                                }
-                                expandedEquipment = false
-                                Toast.makeText(context, item, Toast.LENGTH_SHORT).show()
-                            }
-                        ) {
-                            Text(text = item)
-                        }
-                    }
-                }
-            }
-
-            val equipmentTypeMap = mapOf(
-                "Bat" to listOf("Leather", "Tennis"),
-                "Ball" to listOf("Leather", "Tennis"),
-                "ProtectiveGear" to listOf("Gloves", "Pads", "Helmet"),
-                "Shoes" to listOf("Male", "Female")
-            )
-
-            ExposedDropdownMenuBox(
-                expanded = expandedEquipmentType,
-                onExpandedChange = { expandedEquipmentType = it }
-            ) {
-                TextField(
-                    value = selectedEquipmentType,
-                    onValueChange = { newEquipmentType ->
-                        if (newEquipmentType != selectedEquipmentType) {
-                            selectedEquipmentType = newEquipmentType
-                            // Reset dependent selections
-                            selectedCategory = ""
-                            playerHeight = 0.0  // Reset the height if needed
-                            viewModel.resetEquipmentDetails()  // Clear or reset view model state if such a function exists
-                        }
-                    },
-                    label = { Text(text = "Please Select Equipment Type") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedEquipmentType) },
-                    modifier = Modifier
-                        .menuAnchor()
-                        .padding(20.dp)
-                )
-                val filteredEquipmentTypes =
-                    equipmentTypeMap[selectedEquipment]?.filter { it.contains(selectedEquipmentType, ignoreCase = true) } ?: emptyList()
-
-                if (filteredEquipmentTypes.isNotEmpty()) {
-                    ExposedDropdownMenu(
-                        expanded = expandedEquipmentType,
-                        onDismissRequest = { expandedEquipmentType = false }
-                    ) {
-                        filteredEquipmentTypes.forEach { item ->
-                            DropdownMenuItem(
-                                onClick = {
-                                    selectedEquipmentType = item
-                                    expandedEquipmentType = false
-                                    Toast.makeText(context, item, Toast.LENGTH_SHORT).show()
-                                    viewModel.resetEquipmentDetails()
-                                }
-                            ) {
-                                Text(text = item)
-                            }
-                        }
-                    }
-                }
-            }
-
-            val categoriesMap = mapOf(
-                "Leather" to listOf("KashmirWillow", "EnglishWillow","LongHandleBats"),
-                "Tennis" to listOf("HardTennis", "SoftTennis"),
-                "Gloves" to listOf("HandGloves"),
-                "Pads" to listOf("LegPads", "ThighGuards"),
-                "Helmet" to listOf("Helmet"),
-                "Male" to listOf("Spiky","Non-Spiky"),
-                "Female" to listOf("Spiky","Non-Spiky")
-            )
-
-            ExposedDropdownMenuBox(
-                expanded = expandedCategory,
-                onExpandedChange = { expandedCategory = it }
-            ) {
-                TextField(
-                    value = selectedCategory,
-                    onValueChange = { selectedCategory = it },
-                    label = { Text(text = "Please Select Categories") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCategory) },
-                    modifier = Modifier
-                        .menuAnchor()
-                        .padding(20.dp)
-                )
-                val filteredCategories =
-                    categoriesMap[selectedEquipmentType]?.filter { it.contains(selectedCategory, ignoreCase = true) }
-                        ?: emptyList()
-
-                if (filteredCategories.isNotEmpty()) {
-                    ExposedDropdownMenu(
-                        expanded = expandedCategory,
-                        onDismissRequest = { expandedCategory = false }
-                    ) {
-                        filteredCategories.forEach { category ->
-                            DropdownMenuItem(
-                                onClick = {
-                                    selectedCategory = category
-                                    expandedCategory = false
-                                    Toast.makeText(context, category, Toast.LENGTH_SHORT).show()
-                                }
-                            ) {
-                                Text(text = category)
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Player Height TextField
-            OutlinedTextField(
-                value = playerHeight.toString(),
-                onValueChange = { input ->
-                    playerHeight = input.toDoubleOrNull() ?: 0.0
-                },
-                label = { Text(if (selectedEquipment.equals("Shoes", ignoreCase = true)) "Heel to Toe Length in cm" else "Player Height", color = Color.White) },
-                placeholder = { Text(if (selectedEquipment.equals("Shoes", ignoreCase = true)) "Enter heel to toe ratio" else "Height", color = Color.White) },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Done
-                ),
-                textStyle = TextStyle(color = Color.White),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        keyboardController?.hide()
-                    }
-                ),
-                modifier = Modifier
-                    .padding(bottom = 8.dp)
-            )
-
-            Button(
-                onClick = {
-                    viewModel.getEquipmentSizeByHeight(
-                        selectedEquipment,
-                        selectedEquipmentType,
-                        selectedCategory,
-                        playerHeight
-                    )
-                },
-                modifier = Modifier
-                    .padding(bottom = 8.dp)
-                    .align(Alignment.CenterHorizontally)
-            ) {
-                Icon(imageVector = Icons.Default.Send, contentDescription = "")
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "Get $selectedEquipment", color = Color.White)
-            }
-
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                ) {
-                    // Collect State Flow values here directly
-                    val equipmentFound by viewModel.equipmentFound.collectAsState()
-                    val equipmentSize by viewModel.equipmentSize.collectAsState()
-                    val equipmentImageResId by viewModel.equipmentImageResId.collectAsState()
-
-                    if (equipmentFound && !(selectedEquipment.equals(""))) {
-                        Text(
-                            text = "Suggested Equipment is: $selectedEquipment and length is $equipmentSize ",
-                            color = Color.Black,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp)
-                        )
-                        when {
-                            selectedEquipment.equals("Bat", ignoreCase = true) ||
-                                    selectedEquipment.equals("Ball", ignoreCase = true) ||
-                                    selectedEquipment.equals("ProtectiveGear", ignoreCase = true) -> {
-                                Image(
-                                    painter = painterResource(equipmentImageResId),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .size(width = 450.dp, height = 350.dp)
-                                )
-                            }
-                            selectedEquipment.equals("Shoes", ignoreCase = true) -> {
-                                Image(
-                                    painter = painterResource(R.drawable.shoeschartc),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .size(width = 450.dp, height = 350.dp)
-                                )
-                            }
-                        }
-                    }
-                    else {
-                        Text(
-                            text = "Equipment not found for the entered details.",
-                            color = Color.White,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp)
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-*/
 
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun EquipmentSizeCalculatorByHeight(viewModel: SportsEquipmentViewModel) {
+fun EquipmentSizeCalculatorByHeight(
+    viewModel: SportsEquipmentViewModel,
+    requiredEquipment: String,
+    equipmentType: String,
+    categories: String
+) {
     var playerHeight by remember { mutableStateOf(0.0) }
-    var selectedEquipment by remember { mutableStateOf("") }
-    var selectedEquipmentType by remember { mutableStateOf("") }
-    var selectedCategory by remember { mutableStateOf("") }
-
-    val equipmentOptions = listOf("Bat", "ProtectiveGear", "Shoes")
-    val typeOfEquipmentOptions = listOf("Leather", "Tennis", "Male", "Female", "Gloves", "Pads", "Helmet")
-    val categoriesOptions = listOf(
-        "KashmirWillow", "EnglishWillow", "HardTennis", "lowTennis","HandGloves", "LegPads",
-        "ThighGuards", "Helmet", "Spiky", "Non-Spiky"
-    )
 
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
-
-    var expandedEquipment by remember { mutableStateOf(false) }
-    var expandedEquipmentType by remember { mutableStateOf(false) }
-    var expandedCategory by remember { mutableStateOf(false) }
 
     var zoomLevel by remember { mutableStateOf(1f) } // Zoom level for images
     var offsetX by remember { mutableStateOf(0f) } // Horizontal offset for panning
@@ -1142,161 +351,63 @@ fun EquipmentSizeCalculatorByHeight(viewModel: SportsEquipmentViewModel) {
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            ExposedDropdownMenuBox(
-                expanded = expandedEquipment,
-                onExpandedChange = { expandedEquipment = it }
-            ) {
-                TextField(
-                    value = selectedEquipment,
-                    onValueChange = { newEquipment ->
-                        if (newEquipment != selectedEquipment) {
-                            selectedEquipment = newEquipment
-                            // Reset dependent selections
-                            selectedEquipmentType = ""
-                            selectedCategory = ""
-                            playerHeight = 0.0  // Reset the height if needed
-                            viewModel.resetEquipmentDetails()  // Clear or reset view model state if such a function exists
-                        }
-                    },
-                    label = { Text(text = "Please Select required Equipment") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedEquipment) },
-                    modifier = Modifier
-                        .menuAnchor()
-                        .padding(20.dp),
-                    readOnly = true  // Set the TextField as readOnly to prevent user typing
-                )
-                ExposedDropdownMenu(
-                    expanded = expandedEquipment,
-                    onDismissRequest = { expandedEquipment = false }
-                ) {
-                    equipmentOptions.forEach { item ->
-                        DropdownMenuItem(
-                            onClick = {
-                                if (item != selectedEquipment) {  // Check if the item selected is different
-                                    selectedEquipment = item
-                                    // Reset all related fields when a new item is selected
-                                    selectedEquipmentType = ""
-                                    selectedCategory = ""
-                                    playerHeight = 0.0
-                                    viewModel.resetEquipmentDetails()
-                                }
-                                expandedEquipment = false
-                                Toast.makeText(context, item, Toast.LENGTH_SHORT).show()
-                            }
-                        ) {
-                            Text(text = item)
-                        }
-                    }
-                }
-            }
-
-            val equipmentTypeMap = mapOf(
-                "Bat" to listOf("Leather", "Tennis"),
-                "Ball" to listOf("Leather", "Tennis"),
-                "ProtectiveGear" to listOf("Gloves", "Pads", "Helmet"),
-                "Shoes" to listOf("Male", "Female")
+            TextField(
+                value = requiredEquipment,
+                onValueChange = { },
+                label = { Text(text = "Required Equipment") },
+                readOnly = true,
+                modifier = Modifier
+                    .padding(20.dp)
             )
 
-            ExposedDropdownMenuBox(
-                expanded = expandedEquipmentType,
-                onExpandedChange = { expandedEquipmentType = it }
-            ) {
-                TextField(
-                    value = selectedEquipmentType,
-                    onValueChange = { newEquipmentType ->
-                        if (newEquipmentType != selectedEquipmentType) {
-                            selectedEquipmentType = newEquipmentType
-                            // Reset dependent selections
-                            selectedCategory = ""
-                            playerHeight = 0.0  // Reset the height if needed
-                            viewModel.resetEquipmentDetails()  // Clear or reset view model state if such a function exists
-                        }
-                    },
-                    label = { Text(text = "Please Select Equipment Type") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedEquipmentType) },
-                    modifier = Modifier
-                        .menuAnchor()
-                        .padding(20.dp)
-                )
-                val filteredEquipmentTypes =
-                    equipmentTypeMap[selectedEquipment]?.filter { it.contains(selectedEquipmentType, ignoreCase = true) } ?: emptyList()
-
-                if (filteredEquipmentTypes.isNotEmpty()) {
-                    ExposedDropdownMenu(
-                        expanded = expandedEquipmentType,
-                        onDismissRequest = { expandedEquipmentType = false }
-                    ) {
-                        filteredEquipmentTypes.forEach { item ->
-                            DropdownMenuItem(
-                                onClick = {
-                                    selectedEquipmentType = item
-                                    expandedEquipmentType = false
-                                    Toast.makeText(context, item, Toast.LENGTH_SHORT).show()
-                                    viewModel.resetEquipmentDetails()
-                                }
-                            ) {
-                                Text(text = item)
-                            }
-                        }
-                    }
-                }
-            }
-
-            val categoriesMap = mapOf(
-                "Leather" to listOf("KashmirWillow", "EnglishWillow","LongHandleBats"),
-                "Tennis" to listOf("HardTennis", "lowTennis"),
-                "Gloves" to listOf("HandGloves"),
-                "Pads" to listOf("LegPads","ThighGuards"),
-                "Helmet" to listOf("Helmet"),
-                "Male" to listOf("Spiky","Non-Spiky"),
-                "Female" to listOf("Spiky","Non-Spiky")
+            TextField(
+                value = equipmentType,
+                onValueChange = { },
+                label = { Text(text = "Equipment Type") },
+                readOnly = true,
+                modifier = Modifier
+                    .padding(20.dp)
             )
 
-            ExposedDropdownMenuBox(
-                expanded = expandedCategory,
-                onExpandedChange = { expandedCategory = it }
-            ) {
-                TextField(
-                    value = selectedCategory,
-                    onValueChange = { selectedCategory = it },
-                    label = { Text(text = "Please Select Categories") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCategory) },
-                    modifier = Modifier
-                        .menuAnchor()
-                        .padding(20.dp)
-                )
-                val filteredCategories =
-                    categoriesMap[selectedEquipmentType]?.filter { it.contains(selectedCategory, ignoreCase = true) }
-                        ?: emptyList()
+            TextField(
+                value = categories,
+                onValueChange = { },
+                label = { Text(text = "Categories") },
+                readOnly = true,
+                modifier = Modifier
+                    .padding(20.dp)
+            )
 
-                if (filteredCategories.isNotEmpty()) {
-                    ExposedDropdownMenu(
-                        expanded = expandedCategory,
-                        onDismissRequest = { expandedCategory = false }
-                    ) {
-                        filteredCategories.forEach { category ->
-                            DropdownMenuItem(
-                                onClick = {
-                                    selectedCategory = category
-                                    expandedCategory = false
-                                    Toast.makeText(context, category, Toast.LENGTH_SHORT).show()
-                                }
-                            ) {
-                                Text(text = category)
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Player Height TextField
             OutlinedTextField(
                 value = playerHeight.toString(),
                 onValueChange = { input ->
-                    playerHeight = input.toDoubleOrNull() ?: 0.0
+                    Log.d("PlayerHeight", "Input: $input")
+                    if (input.isNotEmpty()) {
+                        val newHeight = input.toDoubleOrNull()
+                        if (newHeight != null) {
+                            playerHeight = newHeight
+                            Log.d("PlayerHeight", "Updated height: $playerHeight")
+                        } else {
+                            Log.d("PlayerHeight", "Invalid input: $input")
+                            // Optionally show an error message or feedback to the user
+                        }
+                    } else {
+                        playerHeight = 0.0
+                        Log.d("PlayerHeight", "Reset height to default: $playerHeight")
+                    }
                 },
-                label = { Text(if (selectedEquipment.equals("Shoes", ignoreCase = true)) "Heel to Toe Length in cm" else "Player Height", color = Color.White) },
-                placeholder = { Text(if (selectedEquipment.equals("Shoes", ignoreCase = true)) "Enter heel to toe ratio" else "Height", color = Color.White) },
+                label = {
+                    Text(
+                        text = if (requiredEquipment.equals("Shoes", ignoreCase = true)) "Heel to Toe Length in cm" else "Player Height",
+                        color = Color.White
+                    )
+                },
+                placeholder = {
+                    Text(
+                        text = if (requiredEquipment.equals("Shoes", ignoreCase = true)) "Enter heel to toe ratio" else "Height",
+                        color = Color.White
+                    )
+                },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Done
@@ -1314,9 +425,9 @@ fun EquipmentSizeCalculatorByHeight(viewModel: SportsEquipmentViewModel) {
             Button(
                 onClick = {
                     viewModel.getEquipmentSizeByHeight(
-                        selectedEquipment,
-                        selectedEquipmentType,
-                        selectedCategory,
+                        requiredEquipment,
+                        equipmentType,
+                        categories,
                         playerHeight
                     )
                 },
@@ -1326,7 +437,7 @@ fun EquipmentSizeCalculatorByHeight(viewModel: SportsEquipmentViewModel) {
             ) {
                 Icon(imageVector = Icons.Default.Send, contentDescription = "")
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "Get $selectedEquipment", color = Color.White)
+                Text(text = "Get $requiredEquipment", color = Color.White)
             }
 
             Card(
@@ -1344,18 +455,19 @@ fun EquipmentSizeCalculatorByHeight(viewModel: SportsEquipmentViewModel) {
                     val equipmentSize by viewModel.equipmentSize.collectAsState()
                     val equipmentImageResId by viewModel.equipmentImageResId.collectAsState()
 
-                    if (equipmentFound && !(selectedEquipment.equals(""))) {
+                    if (equipmentFound && requiredEquipment.isNotEmpty()) {
                         Text(
-                            text = "Suggested Equipment is: $selectedEquipment and length is $equipmentSize ",
+                            text = "Suggested Equipment is: $requiredEquipment and length is $equipmentSize ",
                             color = Color.Black,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(8.dp).background(Color.Yellow)
+                                .padding(8.dp)
+                                .background(Color.Yellow)
                         )
                         when {
-                            selectedEquipment.equals("Bat", ignoreCase = true) ||
-                                    selectedEquipment.equals("Ball", ignoreCase = true) ||
-                                    selectedEquipment.equals("ProtectiveGear", ignoreCase = true) -> {
+                            requiredEquipment.equals("Bat", ignoreCase = true) ||
+                                    requiredEquipment.equals("Ball", ignoreCase = true) ||
+                                    requiredEquipment.equals("ProtectiveGear", ignoreCase = true) -> {
                                 Image(
                                     painter = painterResource(equipmentImageResId),
                                     contentDescription = null,
@@ -1376,7 +488,7 @@ fun EquipmentSizeCalculatorByHeight(viewModel: SportsEquipmentViewModel) {
                                         }
                                 )
                             }
-                            selectedEquipment.equals("Shoes", ignoreCase = true) -> {
+                            requiredEquipment.equals("Shoes", ignoreCase = true) -> {
                                 Image(
                                     painter = painterResource(R.drawable.shoeschartc),
                                     contentDescription = null,
@@ -1398,8 +510,7 @@ fun EquipmentSizeCalculatorByHeight(viewModel: SportsEquipmentViewModel) {
                                 )
                             }
                         }
-                    }
-                    else {
+                    } else {
                         Text(
                             text = "Equipment not found for the entered details.",
                             color = Color.White,
@@ -1413,6 +524,7 @@ fun EquipmentSizeCalculatorByHeight(viewModel: SportsEquipmentViewModel) {
         }
     }
 }
+
 
 
 suspend fun getEquipmentSizeByHeight(

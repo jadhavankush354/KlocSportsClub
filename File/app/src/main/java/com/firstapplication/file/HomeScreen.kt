@@ -26,8 +26,6 @@ fun HomeScreen(controller:NavHostController)
 
   ReadAndInsertDataFromCSV(LocalContext.current, viewModel =viewmodel )
 
-//  EquipmentSizeCalculatorByAge(viewModel = viewmodel)
-//    EquipmentSizeCalculatorByHeight(viewModel = viewmodel)
   Box {
     Modifier
       .fillMaxWidth()
