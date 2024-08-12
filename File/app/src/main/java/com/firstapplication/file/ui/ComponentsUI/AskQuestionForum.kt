@@ -4,7 +4,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -17,9 +19,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
@@ -27,8 +29,10 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Report
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
@@ -68,6 +72,7 @@ fun AskQuestionForum(
     viewModel: ProfileViewModel = hiltViewModel(),
     viewModel1: FirestoreViewModel = hiltViewModel())
 {
+    var admin by remember { mutableStateOf("jadhavankush354@gmail.com") }
     val context= LocalContext.current
     val email = viewModel.currentUser?.takeIf { it.isNotEmpty() } ?: ""
     var userName by remember { mutableStateOf("") }
@@ -123,7 +128,7 @@ fun AskQuestionForum(
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent
                     ),
-                    textStyle = MaterialTheme.typography.body1.copy(
+                    textStyle = MaterialTheme.typography.bodyMedium.copy(
                         color = Color.White,
                         fontSize = 20.sp,
                         textAlign = TextAlign.Center
@@ -135,14 +140,13 @@ fun AskQuestionForum(
                 ) {
                     categories.forEach { category ->
                         DropdownMenuItem(
+                            text = { Text(category) },
                             onClick = {
                                 selectedText = category
                                 expanded = false
                                 selectedCategory = category
                             }
-                        ) {
-                            Text(text = category)
-                        }
+                        )
                     }
                 }
             }
@@ -227,6 +231,7 @@ fun AskQuestionForum(
         }
     }
 }
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ExpandableCard(
     question: Question,
@@ -238,12 +243,20 @@ fun ExpandableCard(
     onDeleteReplyClick: (String, String) -> Unit, // Added for deleting reply
     currentUserName: String // Added currentUserName parameter
 ) {
+    var admin by remember { mutableStateOf("jadhavankush354@gmail.com") }
     var showReplies by remember { mutableStateOf(false) }
     var replyText by remember { mutableStateOf("") }
+
+    var showMenu by remember { mutableStateOf(false) } // For question dropdown
+    var showReplyMenu by remember { mutableStateOf<Pair<String, Boolean>?>(null) } // For reply dropdown
+
     Card(modifier = Modifier
         .fillMaxWidth()
         .padding(8.dp)
-        .clickable { onCardClick(question.id) }) {
+        .combinedClickable(
+            onClick = { onCardClick(question.id) },
+            onLongClick = { showMenu = true } // Show dropdown on long click
+        )) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -254,7 +267,7 @@ fun ExpandableCard(
                     Text(
                         text = question.userName,
                         fontSize = 20.sp,
-                        style = MaterialTheme.typography.body1,
+                        style = MaterialTheme.typography.bodyMedium,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -262,42 +275,58 @@ fun ExpandableCard(
                     Text(
                         text = formatTimestamp(question.timestamp),
                         fontSize = 12.sp,
-                        style = MaterialTheme.typography.body2,
+                        style = MaterialTheme.typography.bodySmall,
                         color = Color.Gray
                     )
-                }
-                if (question.userName == currentUserName) {
-                    IconButton(onClick = {
-                        Log.d("debug", "onDeleteClick(${question.id}ss)")
-                        onDeleteClick(question.id)
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Delete",
-                            tint = Color.Red,
-                        )
-                    }
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = question.comment,
                 fontSize = 15.sp,
-                style = MaterialTheme.typography.body1,
+                style = MaterialTheme.typography.bodyMedium,
                 maxLines = if (expanded) Int.MAX_VALUE else 1,
                 overflow = TextOverflow.Ellipsis
             )
+            DropdownMenu(
+                expanded = showMenu,
+                onDismissRequest = { showMenu = false }
+            ) {
+                DropdownMenuItem(
+                    text = { Text("Report") },
+                    onClick = {  },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Report, // Use appropriate icon
+                            contentDescription = "Report"
+                        )
+                    }
+                )
+                if (question.userName == currentUserName) {
+                    DropdownMenuItem(
+                        text = { Text("Delete") },
+                        onClick = { onDeleteClick(question.id)
+                            showMenu = false },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Delete, // Use appropriate icon
+                                contentDescription = "Delete"
+                            )
+                        }
+                    )
+                }
+            }
             if (expanded) {
                 Column {
                     if (!showReplies) {
                         Spacer(modifier = Modifier.height(8.dp))
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceEvenly
+                            horizontalArrangement = Arrangement.Start
                         ) {
                             Text(
                                 text = "Reply",
-                                color = Color.Green,
+                                color = Color.Blue,
                                 modifier = Modifier.clickable { showReplies = !showReplies }
                             )
                         }
@@ -315,11 +344,17 @@ fun ExpandableCard(
                                     .fillMaxWidth()
                                     .height(height.coerceAtMost(maxHeight))
                             ) {
-                                items(question.replies.sortedByDescending { it.timestamp }) { reply ->
+                                items(question.replies.sortedBy { it.timestamp }) { reply ->
                                     Row(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(start = 16.dp, top = 8.dp),
+                                            .padding(start = 16.dp, top = 8.dp)
+                                            .combinedClickable(
+                                                onClick = {}, // Provide a no-op or desired action here
+                                                onLongClick = {
+                                                    showReplyMenu = Pair(reply.id, true)
+                                                }
+                                            ),
                                         horizontalArrangement = Arrangement.SpaceBetween
                                     ) {
                                         Column {
@@ -327,33 +362,60 @@ fun ExpandableCard(
                                                 Text(
                                                     text = reply.userName,
                                                     fontSize = 15.sp,
-                                                    style = MaterialTheme.typography.body2
+                                                    style = MaterialTheme.typography.bodyMedium
                                                 )
                                                 Spacer(modifier = Modifier.width(4.dp))
                                                 Text(
                                                     text = formatTimestamp(reply.timestamp),
                                                     fontSize = 12.sp,
-                                                    style = MaterialTheme.typography.body2,
+                                                    style = MaterialTheme.typography.bodySmall,
                                                     color = Color.Gray
                                                 )
                                             }
                                             Text(
                                                 text = reply.subComment,
                                                 fontSize = 10.sp,
-                                                style = MaterialTheme.typography.body2
+                                                style = MaterialTheme.typography.bodyMedium
                                             )
-                                        }
-                                        if (reply.userName == currentUserName) {
-                                            IconButton(onClick = {
-                                                onDeleteReplyClick(question.id, reply.id)
-                                            }) {
-                                                Icon(
-                                                    imageVector = Icons.Default.Delete,
-                                                    contentDescription = "Delete",
-                                                    tint = Color.Red
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.Start
+                                            ) {
+                                                Text(
+                                                    text = "Reply",
+                                                    color = Color.Blue,
+                                                    modifier = Modifier.clickable { replyText = "@${reply.userName} " }
                                                 )
                                             }
                                         }
+                                        DropdownMenu(
+                                            expanded = showReplyMenu?.first == reply.id && showReplyMenu?.second == true,
+                                            onDismissRequest = { showReplyMenu = null }
+                                        ) {
+                                            DropdownMenuItem(
+                                                text = { Text("Report") },
+                                                onClick = { /* Report logic */ },
+                                                leadingIcon = {
+                                                    Icon(
+                                                        imageVector = Icons.Default.Report, // Use appropriate icon
+                                                        contentDescription = "Report"
+                                                    )
+                                                }
+                                            )
+                                            if (reply.userName == currentUserName) {
+                                                DropdownMenuItem(
+                                                    text = { Text("Delete") },
+                                                    onClick = { onDeleteReplyClick(question.id, reply.id) },
+                                                    leadingIcon = {
+                                                        Icon(
+                                                            imageVector = Icons.Default.Delete, // Use appropriate icon
+                                                            contentDescription = "Delete"
+                                                        )
+                                                    }
+                                                )
+                                            }
+                                        }
+
                                     }
                                 }
                             }
@@ -374,6 +436,7 @@ fun ExpandableCard(
         }
     }
 }
+
 @Composable
 fun ReplyInput(replyText: String, onReplyTextChanged: (String) -> Unit, onSubmitReply: () -> Unit) {
     Column(modifier = Modifier.padding(8.dp)) {

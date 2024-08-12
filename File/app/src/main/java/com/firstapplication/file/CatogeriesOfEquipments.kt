@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absoluteOffset
+import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -181,52 +183,53 @@ fun CatogeriesOfEquipments(controller: NavHostController)
                             )
                         }
                         item {
-                            ExpandableCricketCard(
-                                title = "Protective Gears",
-                                imageRes = R.drawable.protectivegears,
-                                description = "Click here for Best Protective Gears\n" +
-                                        "Helmets\n" +
-                                        "Gloves\n" +
-                                        "Pads\n",
-                                backgroundColor = colorResource(id = R.color.white),
-                                onClickImage = {
-                                    controller.navigate("ProtectiveGear")
-                                },
-                                onClickShowPdf = {
-                                    showProtectiveGearsMenu = true
-                                }
-                            )
-                            DropdownMenu(
-                                expanded = showProtectiveGearsMenu,
-                                onDismissRequest = { showProtectiveGearsMenu = false },
-                                modifier = Modifier.align(Alignment.TopEnd)
-                            ) {
-                                DropdownMenuItem(onClick = {
-                                    showMenu = false
-                                    showProtectiveGearsMenu = false
-                                    isShowPdf=true
-                                    pdfData = R.raw.helmetguide
-                                    selectedPdf = "helmetguide.pdf"
-                                }) {
-                                    Text("Helmets")
-                                }
-                                DropdownMenuItem(onClick = {
-                                    showMenu = false
-                                    showProtectiveGearsMenu = false
-                                    isShowPdf=true
-                                    pdfData = R.raw.battinggloves
-                                    selectedPdf = "battinggloves.pdf"
-                                }) {
-                                    Text("Gloves")
-                                }
-                                DropdownMenuItem(onClick = {
-                                    showMenu = false
-                                    showProtectiveGearsMenu = false
-                                    isShowPdf=true
-                                    pdfData = R.raw.cricketpadsinfo
-                                    selectedPdf = "cricketpadsinfo.pdf"
-                                }) {
-                                    Text("Pads")
+                            Box(modifier = Modifier.fillMaxWidth().align(Alignment.Center)) {
+                                ExpandableCricketCard(
+                                    title = "Protective Gears",
+                                    imageRes = R.drawable.protectivegears,
+                                    description = "Click here for Best Protective Gears\n" +
+                                            "Helmets\n" +
+                                            "Gloves\n" +
+                                            "Pads\n",
+                                    backgroundColor = colorResource(id = R.color.white),
+                                    onClickImage = {
+                                        controller.navigate("ProtectiveGear")
+                                    },
+                                    onClickShowPdf = {
+                                        showProtectiveGearsMenu = true
+                                    }
+                                )
+                                DropdownMenu(
+                                    expanded = showProtectiveGearsMenu,
+                                    onDismissRequest = { showProtectiveGearsMenu = false },
+                                ) {
+                                    DropdownMenuItem(onClick = {
+                                        showMenu = false
+                                        showProtectiveGearsMenu = false
+                                        isShowPdf=true
+                                        pdfData = R.raw.helmetguide
+                                        selectedPdf = "helmetguide.pdf"
+                                    }) {
+                                        Text("Helmets")
+                                    }
+                                    DropdownMenuItem(onClick = {
+                                        showMenu = false
+                                        showProtectiveGearsMenu = false
+                                        isShowPdf=true
+                                        pdfData = R.raw.battinggloves
+                                        selectedPdf = "battinggloves.pdf"
+                                    }) {
+                                        Text("Gloves")
+                                    }
+                                    DropdownMenuItem(onClick = {
+                                        showMenu = false
+                                        showProtectiveGearsMenu = false
+                                        isShowPdf=true
+                                        pdfData = R.raw.cricketpadsinfo
+                                        selectedPdf = "cricketpadsinfo.pdf"
+                                    }) {
+                                        Text("Pads")
+                                    }
                                 }
                             }
                         }

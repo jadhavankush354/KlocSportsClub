@@ -406,24 +406,6 @@ class FirestoreDbRepositoryImpl @Inject constructor(
         awaitClose { close() }
     }
 
-//    override fun deleteQuestion(questionId: String, subCategory: String): Flow<ResultState<String>> = callbackFlow {
-//        trySend(ResultState.Loading)
-//        db.collection(subCategory)
-//            .document(questionId)
-//            .delete()
-//            .addOnCompleteListener { task ->
-//                if (task.isSuccessful) {
-//                    trySend(ResultState.Success("Question deleted successfully."))
-//                } else {
-//                    trySend(ResultState.Failure(task.exception ?: Exception("Unknown error")))
-//                }
-//            }
-//            .addOnFailureListener { e ->
-//                trySend(ResultState.Failure(e))
-//            }
-//        awaitClose { close() }
-//    }
-
     override fun deleteReply(questionId: String, replyId: String, subCategory: String): Flow<ResultState<String>> = callbackFlow {
         trySend(ResultState.Loading)
         val replyDocRef = db.collection(subCategory)
@@ -498,27 +480,4 @@ class FirestoreDbRepositoryImpl @Inject constructor(
         awaitClose { close() }
     }
 
-//    override fun deleteAllQuestions(subCategory: String): Flow<ResultState<String>> = callbackFlow {
-//        trySend(ResultState.Loading)
-//
-//        // Fetch all questions
-//        db.collection(subCategory)
-//            .get()
-//            .addOnSuccessListener { snapshot ->
-//                // Create a batch to delete all questions
-//                val batch = db.batch()
-//
-//                snapshot.forEach { document ->
-//                    batch.delete(document.reference)
-//                }
-//
-//                // Commit the batch
-//                batch.commit()
-//                    .addOnSuccessListener { trySend(ResultState.Success("All questions deleted successfully.")) }
-//                    .addOnFailureListener { trySend(ResultState.Failure(it)) }
-//            }
-//            .addOnFailureListener { trySend(ResultState.Failure(it)) }
-//
-//        awaitClose { close() }
-//    }
 }
