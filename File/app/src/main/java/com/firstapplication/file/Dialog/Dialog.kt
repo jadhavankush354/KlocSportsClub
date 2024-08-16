@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,10 +14,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,6 +42,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import com.firstapplication.file.DataClass.Enum.DialogType
+import com.firstapplication.file.PdfViewer
 import com.firstapplication.file.R
 
 @Composable
@@ -94,12 +104,12 @@ fun BattingStyleDialog(
     Dialog(
         onDismissRequest = onDismissRequest,
         properties = DialogProperties(
-            dismissOnBackPress = false, // Disable dismiss on back press
-            dismissOnClickOutside = false // Disable dismiss on click outside
+            dismissOnBackPress = false,
+            dismissOnClickOutside = false
         )
     ) {
         BackHandler(onBack = {
-            controller.popBackStack()
+            controller.navigate("CatogeriesOfEquipments")
         })
         Card(
             modifier = Modifier
@@ -108,53 +118,62 @@ fun BattingStyleDialog(
                 .padding(16.dp),
             shape = RoundedCornerShape(16.dp),
         ) {
-            Column(
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(colorResource(id = R.color.primaryDark)),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
+                    .background(colorResource(id = R.color.primaryDark))
             ) {
-                Image(
-                    painter = painter,
-                    contentDescription = imageDescription,
-                    contentScale = ContentScale.Fit,
+                Column(
                     modifier = Modifier
-                        .height(160.dp)
-                )
-                Text(
-                    text = "Please Select Your Batting Style for your Better Play",
-                    modifier = Modifier.padding(16.dp),
-                )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
+                        .fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    TextButton(
-                        onClick = {
-                            onDismissRequest()
-                        },
-                        modifier = Modifier.padding(8.dp),
+                    Image(
+                        painter = painter,
+                        contentDescription = imageDescription,
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier
+                            .height(160.dp)
+                    )
+                    Text(
+                        text = "Please Select Your Batting Style for your Better Play",
+                        modifier = Modifier.padding(16.dp),
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
                     ) {
-                        Text("RHB")
+                        TextButton(
+                            onClick = {
+                                onDismissRequest()
+                            },
+                            modifier = Modifier.padding(8.dp),
+                        ) {
+                            Text("RHB")
+                        }
+                        TextButton(
+                            onClick = {
+                                onConfirmation()
+                            },
+                            modifier = Modifier.padding(8.dp),
+                        ) {
+                            Text("LHB")
+                        }
                     }
-                    TextButton(
-                        onClick = {
-                            onConfirmation()
-                        },
-                        modifier = Modifier.padding(8.dp),
-                    ) {
-                        Text("LHB")
-                    }
-                    TextButton(
-                        onClick = {
-                            controller.navigate("CatogeriesOfEquipments")
-                        },
-                        modifier = Modifier.padding(8.dp),
-                    ) {
-                        Text("CANCEL")
-                    }
+                }
+                IconButton(
+                    onClick = {
+                        controller.popBackStack()
+                    },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Close"
+                    )
                 }
             }
         }
@@ -171,12 +190,12 @@ fun BallTypeDialog(
     Dialog(
         onDismissRequest = { onDismissRequest() },
         properties = DialogProperties(
-            dismissOnBackPress = false, // Disable dismiss on back press
-            dismissOnClickOutside = false // Enable dismiss on click outside
+            dismissOnBackPress = false,
+            dismissOnClickOutside = false
         )
     ) {
         BackHandler(onBack = {
-            navController.popBackStack()
+            navController.navigate("CatogeriesOfEquipments")
         })
         Card(
             modifier = Modifier
@@ -185,61 +204,76 @@ fun BallTypeDialog(
                 .padding(16.dp),
             shape = RoundedCornerShape(16.dp),
         ) {
-            Column(
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(dialogColor),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
+                    .background(dialogColor)
             ) {
-                Text(
-                    text = "Choose the type of ball for regular practice",
-                    modifier = Modifier.padding(16.dp),
-                )
-                Row(
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
+                        .fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    TextButton(
-                        onClick = {
-                            onDismissRequest()
-                        },
-                        modifier = Modifier.padding(8.dp),
+                    Text(
+                        text = "Choose the type of ball for regular practice",
+                        modifier = Modifier.padding(16.dp),
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
                     ) {
-                        Text("Leather")
+                        TextButton(
+                            onClick = { onDismissRequest() },
+                            modifier = Modifier.padding(8.dp),
+                        ) {
+                            Text("Leather")
+                        }
+                        TextButton(
+                            onClick = {
+                                onConfirmation()
+                                navController.navigate("TennisBatTypeDialog")
+                            },
+                            modifier = Modifier.padding(8.dp),
+                        ) {
+                            Text("Tennis")
+                        }
                     }
-                    TextButton(
-                        onClick = {
-                            // Update this line to trigger the navigation to TennisBatTypeDialog
-                            onConfirmation()
-                            navController.navigate("TennisBatTypeDialog")
-                        },
-                        modifier = Modifier.padding(8.dp),
-                    ) {
-                        Text("Tennis")
-                    }
-                    TextButton(
-                        onClick = {
-                            navController.navigate("CatogeriesOfEquipments")
-                        },
-                        modifier = Modifier.padding(8.dp),
-                    ) {
-                        Text("CANCEL")
-                    }
+                }
+                IconButton(
+                    onClick = {
+                        navController.popBackStack()
+                    },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Close"
+                    )
                 }
             }
         }
     }
 }
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BatTypeDialog(
     navController: NavHostController,
     onDismissRequest: () -> Unit,
     onConfirmation: (String) -> Unit,
 ) {
-    val batTypes = listOf("KashmirWillow", "English Willow", "Long Handle Bats")
+    val batTypes = listOf(
+        "Kashmir Willow" to R.raw.kashmiribats,
+        "English Willow" to R.raw.englishwillow,
+        "Long Handle Bats" to R.raw.moongoose
+    )
+
+    var isShowPdf by remember { mutableStateOf(false) }
+    var selectedPdfResId by remember { mutableStateOf(0) }
+    var selectedPdfName by remember { mutableStateOf("") }
+
     Dialog(
         onDismissRequest = onDismissRequest,
         properties = DialogProperties(
@@ -248,33 +282,94 @@ fun BatTypeDialog(
         )
     ) {
         BackHandler(onBack = {
-            navController.popBackStack()
+            if (isShowPdf) {
+                isShowPdf = false
+            } else {
+                navController.navigate("CatogeriesOfEquipments")
+            }
         })
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(150.dp),
-            shape = RoundedCornerShape(16.dp),
-            color = Color(0xFFCCC2DC)
-        ) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
+
+        if (isShowPdf) {
+            Box(
+                modifier = Modifier.fillMaxSize()
             ) {
-                items(batTypes) { batType ->
-                    TextButton(
-                        onClick = {
-                            onConfirmation(batType)
-                            // TODO: Navigate to specific screen based on bat type
-                            when (batType) {
-                                "KashmirWillow" -> navController.navigate("KashmirWillow")
-                                "English Willow" -> navController.navigate("EnglishWillow")
-                                "Long Handle Bats" -> navController.navigate("MangooseBats")
+                Column {
+                    TopAppBar(
+                        title = { Text(text = selectedPdfName) },
+                        navigationIcon = {
+                            IconButton(onClick = { isShowPdf = false }) {
+                                Icon(imageVector = Icons.Default.Close, contentDescription = "Close")
                             }
-                        },
-                        modifier = Modifier.padding(4.dp),
+                        }
+                    )
+                    PdfViewer(pdfResId = selectedPdfResId, pdfName = selectedPdfName)
+                }
+            }
+        } else {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp), // Adjusted height for the close button
+                shape = RoundedCornerShape(16.dp),
+                color = Color(0xFFCCC2DC)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = 25.dp) // Leave space for the close button
                     ) {
-                        Text(batType)
+                        items(batTypes) { (batType, pdfResId) ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                TextButton(
+                                    onClick = {
+                                        onConfirmation(batType)
+                                        // Navigate to specific screen based on bat type
+                                        when (batType) {
+                                            "Kashmir Willow" -> navController.navigate("KashmirWillow")
+                                            "English Willow" -> navController.navigate("EnglishWillow")
+                                            "Long Handle Bats" -> navController.navigate("MangooseBats")
+                                        }
+                                    }
+                                ) {
+                                    Text(batType)
+                                }
+
+                                IconButton(
+                                    onClick = {
+                                        selectedPdfResId = pdfResId
+                                        selectedPdfName = "$batType.pdf"
+                                        isShowPdf = true
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Info,
+                                        contentDescription = "Info"
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    // Close button
+                    IconButton(
+                        onClick = { navController.popBackStack() },
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Close"
+                        )
                     }
                 }
             }
@@ -288,8 +383,7 @@ fun TennisBatTypeDialog(
     onDismissRequest: () -> Unit,
     onConfirmation: (String) -> Unit,
 ) {
-    val batTypes = listOf("HardTennisBats", "LowTennisBats")
-    val dialogColor = colorResource(id = R.color.black)
+    val batTypes = listOf("Hard Tennis Bats", "Low Tennis Bats")
 
     Dialog(
         onDismissRequest = onDismissRequest,
@@ -304,27 +398,45 @@ fun TennisBatTypeDialog(
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(150.dp),
+                .height(200.dp), // Adjusted height to accommodate the close button
             shape = RoundedCornerShape(16.dp),
             color = Color.White
         ) {
-            LazyColumn(
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                items(batTypes) { batType ->
-                    TextButton(
-                        onClick = {
-                            onConfirmation(batType)
-                            when (batType) {
-                                "HardTennisBats" -> navController.navigate("HardTennis")
-                                "LowTennisBats" -> navController.navigate("LowTennis")
-                            }
-                        },
-                        modifier = Modifier.padding(4.dp),
-                    ) {
-                        Text(batType)
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 32.dp) // Leave space for the close button
+                ) {
+                    items(batTypes) { batType ->
+                        TextButton(
+                            onClick = {
+                                onConfirmation(batType)
+                                when (batType) {
+                                    "Hard Tennis Bats" -> navController.navigate("HardTennis")
+                                    "Low Tennis Bats" -> navController.navigate("LowTennis")
+                                }
+                            },
+                            modifier = Modifier.padding(4.dp),
+                        ) {
+                            Text(batType)
+                        }
                     }
+                }
+
+                // Close button
+                IconButton(
+                    onClick = { navController.navigate("CatogeriesOfEquipments") },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Close"
+                    )
                 }
             }
         }

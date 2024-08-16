@@ -26,30 +26,22 @@ class FirestoreViewModel @Inject constructor(
 
     private val _res: MutableState<FirestoreState> = mutableStateOf(FirestoreState())
     val res:State<FirestoreState> = _res
+
     private val _res1: MutableState<singleState> = mutableStateOf(singleState())
     val res1:State<singleState> = _res1
-    fun insert(user: FirestoreModel.FirestoreUser) = repo.insert(user)
 
     private val _questionsState = MutableStateFlow<ResultState<List<Question>>>(ResultState.Loading)
     val questionsState: StateFlow<ResultState<List<Question>>> = _questionsState
 
-
-    private val _updateData: MutableState<FirestoreModel> = mutableStateOf(
-        FirestoreModel(
-            user = FirestoreModel.FirestoreUser()
-        )
-    )
+    private val _updateData: MutableState<FirestoreModel> = mutableStateOf(FirestoreModel(user = FirestoreModel.FirestoreUser()))
     val updateData:State<FirestoreModel> = _updateData
-
-    fun setData(data:FirestoreModel){
-        _updateData.value = data
-    }
 
     init {
         getUsers()
         fetchQuestions("questions")
     }
-
+    fun insert(user: FirestoreModel.FirestoreUser) = repo.insert(user)
+    fun setData(data:FirestoreModel) { _updateData.value = data }
     fun getUsers() = viewModelScope.launch {
         repo.getUsers().collect{
             when(it){
@@ -71,7 +63,6 @@ class FirestoreViewModel @Inject constructor(
             }
         }
     }
-
     fun delete(key:String) = repo.delete(key)
     fun update(user: FirestoreModel) = repo.updateUser(user)
     fun getUserByEmail(email:String)= viewModelScope.launch {
@@ -128,15 +119,218 @@ class FirestoreViewModel @Inject constructor(
             }
         }
     }
+    fun loadOffensiveKeywords(context: Context): Set<String> {
+        val inputStream = context.resources.openRawResource(R.raw.en)  // `R.raw.en` refers to `en.txt` in the raw directory
+        return inputStream.bufferedReader().useLines { lines ->
+            lines.toSet()
+        }
+    }
 
-     fun fetchQuestions(subCategory: String) {
+    fun containsOffensiveKeywords(message: String, offensiveKeywords: Set<String>): Boolean {
+        val words = message.split(" ", "\n", "\t").map { it.lowercase() }
+        return words.any { it in offensiveKeywords }
+    }
+    fun fetchQuestions(subCategory: String) {
         viewModelScope.launch {
+            repo.getQuestions(subCategory).collect { _questionsState.value = it }
+        }
+    }
+
+    fun saveQuestion(question: Question, subCategory: String) {
+        viewModelScope.launch {
+            val currentQuestions = (_questionsState.value as? ResultState.Success)?.data?.toMutableList() ?: mutableListOf()
+            repo.saveQuestion(question, subCategory).collect { updateQuestionState(it, currentQuestions) }
+        }
+    }
+
+    fun saveReply(questionId: String, reply: Replies, subCategory: String) {
+        viewModelScope.launch {
+            val currentQuestions = (_questionsState.value as? ResultState.Success)?.data?.toMutableList() ?: mutableListOf()
+            repo.saveReply(questionId, reply, subCategory).collect { updateReplyState(it, currentQuestions, questionId) }
+        }
+    }
+
+    fun deleteQuestion(questionId: String, subCategory: String) = viewModelScope.launch {
+        repo.deleteQuestion(questionId, subCategory).collect { result ->
+            val unitResult = when (result) {
+                is ResultState.Success -> ResultState.Success(Unit)
+                is ResultState.Failure -> result // Keep failure as it is
+                ResultState.Loading -> ResultState.Loading
+            }
+            updateDeleteState(unitResult, questionId)
+        }
+    }
+
+    fun deleteReply(questionId: String, replyId: String, subCategory: String) = viewModelScope.launch {
+        repo.deleteReply(questionId, replyId, subCategory).collect { result ->
+            val unitResult = when (result) {
+                is ResultState.Success -> ResultState.Success(Unit)
+                is ResultState.Failure -> result // Keep failure as it is
+                ResultState.Loading -> ResultState.Loading
+            }
+            updateDeleteReplyState(unitResult, questionId, replyId)
+        }
+    }
+
+
+    fun updateQuestionReports(questionId: String, userId: String, subCategory: String) = viewModelScope.launch {
+        repo.updateQuestionReports(questionId, userId, subCategory).collect { result ->
+            updateReportState(result, questionId)
+        }
+    }
+
+    fun updateReplyReports(questionId: String, replyId: String, userId: String, subCategory: String) = viewModelScope.launch {
+        repo.updateReplyReports(questionId, replyId, userId, subCategory).collect { result ->
+            updateReplyReportState(result, questionId, replyId)
+        }
+    }
+
+    fun deleteAllQuestions(subCategory: String) = viewModelScope.launch {
+        repo.deleteAllQuestions(subCategory).collect { _questionsState.value = ResultState.Success(emptyList()) }
+    }
+
+    private fun <T> updateState(result: ResultState<T>, state: MutableState<T>) {
+        when (result) {
+            is ResultState.Success -> state.value = result.data as T
+            is ResultState.Failure -> Log.e("debug", "Failed: ${result.e}")
+            ResultState.Loading -> Log.d("debug", "Loading...")
+        }
+    }
+
+    private fun updateQuestionState(result: ResultState<Question>, currentQuestions: MutableList<Question>) {
+        when (result) {
+            is ResultState.Success -> {
+                currentQuestions.add(result.data)
+                _questionsState.value = ResultState.Success(currentQuestions)
+            }
+            is ResultState.Failure -> Log.e("debug", "Failed to save question: ${result.e}")
+            ResultState.Loading -> Log.d("debug", "Saving question...")
+        }
+    }
+
+    private fun updateReplyState(result: ResultState<Replies>, currentQuestions: MutableList<Question>, questionId: String) {
+        if (result is ResultState.Success) {
+            val updatedQuestions = currentQuestions.map { question ->
+                if (question.id == questionId) question.copy(replies = question.replies + result.data) else question
+            }
+            _questionsState.value = ResultState.Success(updatedQuestions)
+        }
+    }
+
+    private fun updateDeleteState(result: ResultState<Unit>, questionId: String) {
+        if (result is ResultState.Success) {
+            val updatedQuestions = (_questionsState.value as? ResultState.Success)?.data?.filter { it.id != questionId }
+            _questionsState.value = ResultState.Success(updatedQuestions ?: emptyList())
+        }
+    }
+
+    private fun updateDeleteReplyState(result: ResultState<Unit>, questionId: String, replyId: String) {
+        if (result is ResultState.Success) {
+            val updatedQuestions = (_questionsState.value as? ResultState.Success)?.data?.map { question ->
+                if (question.id == questionId) question.copy(replies = question.replies.filter { it.id != replyId }) else question
+            }
+            _questionsState.value = ResultState.Success(updatedQuestions ?: emptyList())
+        }
+    }
+
+    private fun updateReportState(result: ResultState<Question>, questionId: String) {
+        if (result is ResultState.Success) {
+            val updatedQuestions = (_questionsState.value as? ResultState.Success)?.data?.map { question ->
+                if (question.id == questionId) result.data else question
+            }
+            _questionsState.value = ResultState.Success(updatedQuestions ?: emptyList())
+        }
+    }
+
+    private fun updateReplyReportState(result: ResultState<Replies>, questionId: String, replyId: String) {
+        if (result is ResultState.Success) {
+            val updatedQuestions = (_questionsState.value as? ResultState.Success)?.data?.map { question ->
+                if (question.id == questionId) {
+                    question.copy(replies = question.replies.map { reply -> if (reply.id == replyId) result.data else reply })
+                } else question
+            }
+            _questionsState.value = ResultState.Success(updatedQuestions ?: emptyList())
+        }
+    }
+
+    /*
+    fun containsOffensiveKeywords(message: String, offensiveKeywords: Set<String>): Boolean {
+        val words = message.split(" ", "\n", "\t").map { it.lowercase() }
+        return words.any { it in offensiveKeywords }
+    }
+    fun fetchQuestions(subCategory: String) {
+        viewModelScope.launch {
+            _questionsState.value = ResultState.Loading // Set to loading before fetching new data
             repo.getQuestions(subCategory).collect { result ->
-                _questionsState.value = result
+                _questionsState.value = if (result is ResultState.Success && result.data.isEmpty()) {
+                    ResultState.Success(emptyList())
+                } else {
+                    result
+                }
             }
         }
     }
+
     fun saveQuestion(question: Question, subCategory: String) {
+        viewModelScope.launch {
+            // Fetch the current list of questions from the state
+            val currentQuestions = (_questionsState.value as? ResultState.Success)?.data?.toMutableList() ?: mutableListOf()
+            Log.d("saveQuestion", "Current questions list size: ${currentQuestions.size}")
+
+            repo.saveQuestion(question, subCategory).collect { result ->
+                when (result) {
+                    is ResultState.Loading -> {
+                        _questionsState.value = ResultState.Loading
+                    }
+                    is ResultState.Success -> {
+                        currentQuestions.add(result.data)
+                        Log.d("saveQuestion", "Updated questions list size: ${currentQuestions.size}")
+
+                        _questionsState.value = ResultState.Success(currentQuestions)
+                    }
+                    is ResultState.Failure -> {
+//                        _questionsState.value = ResultState.Failure(result.exception)
+                    }
+                }
+            }
+        }
+    }
+
+    fun saveReply(questionId: String, reply: Replies, subCategory: String) {
+        viewModelScope.launch {
+            // Create a copy of the current questions list
+            val currentQuestions = (_questionsState.value as? ResultState.Success)?.data?.toMutableList() ?: mutableListOf()
+
+            repo.saveReply(questionId, reply, subCategory).collect { result ->
+                when (result) {
+                    is ResultState.Loading -> {
+                        _questionsState.value = ResultState.Loading
+                    }
+                    is ResultState.Success -> {
+                        // Update the relevant question with the new reply
+                        val updatedQuestions = currentQuestions.map { question ->
+                            if (question.id == questionId) {
+                                val updatedReplies = question.replies.toMutableList().apply {
+                                    add(result.data) // Add the new reply
+                                }
+                                question.copy(replies = updatedReplies)
+                            } else {
+                                question // Keep other questions unchanged
+                            }
+                        }
+
+                        // Update the state with the new list
+                        _questionsState.value = ResultState.Success(updatedQuestions)
+                    }
+                    is ResultState.Failure -> {
+                        // Optionally handle the error state here
+                    }
+                }
+            }
+        }
+    }
+
+    /*fun saveQuestion(question: Question, subCategory: String) {
         viewModelScope.launch {
             repo.saveQuestion(question, subCategory).collect { result ->
                 _questionsState.value = result
@@ -149,17 +343,136 @@ class FirestoreViewModel @Inject constructor(
                 _questionsState.value = result
             }
         }
-    }
-    fun loadOffensiveKeywords(context: Context): Set<String> {
-        val inputStream = context.resources.openRawResource(R.raw.en)  // `R.raw.en` refers to `en.txt` in the raw directory
-        return inputStream.bufferedReader().useLines { lines ->
-            lines.toSet()
+    }*/
+    fun deleteAllQuestions(subCategory: String) = viewModelScope.launch {
+        repo.deleteAllQuestions(subCategory).collect { result ->
+            when (result) {
+                is ResultState.Success -> { _questionsState.value = ResultState.Success(emptyList()) }
+                is ResultState.Failure -> { _questionsState.value = ResultState.Failure(result.e) }
+                ResultState.Loading -> { _questionsState.value = ResultState.Loading }
+            }
+        }
+    }fun deleteQuestion(questionId: String, subCategory: String) = viewModelScope.launch {
+        repo.deleteQuestion(questionId, subCategory).collect { result ->
+            when (result) {
+                is ResultState.Success -> {
+                    _questionsState.value = _questionsState.value.let { currentState ->
+                        if (currentState is ResultState.Success) {
+                            val updatedQuestions = currentState.data.filter { it.id != questionId }
+                            ResultState.Success(updatedQuestions)
+                        } else {
+                            currentState
+                        }
+                    }
+                    Log.d("debug", "Question deleted: $questionId")
+                }
+                is ResultState.Failure -> {
+                    Log.e("debug", "Failed to delete question: ${result.e}")
+                }
+                ResultState.Loading -> {
+                    Log.d("debug", "Deleting question...")
+                }
+            }
         }
     }
-    fun containsOffensiveKeywords(message: String, offensiveKeywords: Set<String>): Boolean {
-        val words = message.split(" ", "\n", "\t").map { it.lowercase() }
-        return words.any { it in offensiveKeywords }
+
+    fun deleteReply(questionId: String, replyId: String, subCategory: String) = viewModelScope.launch {
+        repo.deleteReply(questionId, replyId, subCategory).collect { result ->
+            when (result) {
+                is ResultState.Success -> {
+                    _questionsState.value = _questionsState.value.let { currentState ->
+                        if (currentState is ResultState.Success) {
+                            val updatedQuestions = currentState.data.map { question ->
+                                if (question.id == questionId) {
+                                    val updatedReplies = question.replies.filter { it.id != replyId }
+                                    question.copy(replies = updatedReplies)
+                                } else {
+                                    question
+                                }
+                            }
+                            ResultState.Success(updatedQuestions)
+                        } else {
+                            currentState
+                        }
+                    }
+                    Log.d("debug", "Reply deleted: $replyId")
+                }
+                is ResultState.Failure -> {
+                    Log.e("debug", "Failed to delete reply: ${result.e}")
+                }
+                ResultState.Loading -> {
+                    Log.d("debug", "Deleting reply...")
+                }
+            }
+        }
     }
+
+    fun updateQuestionReports(questionId: String, userId: String, subCategory: String) = viewModelScope.launch {
+        repo.updateQuestionReports(questionId, userId, subCategory).collect { result ->
+            when (result) {
+                is ResultState.Success -> {
+                    _questionsState.value = _questionsState.value.let { currentState ->
+                        if (currentState is ResultState.Success) {
+                            val updatedQuestions = currentState.data.map { question ->
+                                if (question.id == questionId) result.data else question
+                            }
+                            ResultState.Success(updatedQuestions)
+                        } else {
+                            currentState
+                        }
+                    }
+                }
+                is ResultState.Failure -> {
+                    Log.e("debug", "Failed to update question reports: ${result.e}")
+                }
+                ResultState.Loading -> {
+                    Log.d("debug", "Updating question reports...")
+                }
+            }
+        }
+    }
+
+    fun updateReplyReports(questionId: String, replyId: String, userId: String, subCategory: String) = viewModelScope.launch {
+        repo.updateReplyReports(questionId, replyId, userId, subCategory).collect { result ->
+            when (result) {
+                is ResultState.Success -> {
+                    val currentState = _questionsState.value
+                    if (currentState is ResultState.Success) {
+                        val updatedQuestions = currentState.data.map { question ->
+                            // Check if the question ID matches
+                            if (question.id == questionId) {
+                                // Update the specific reply in the replies list
+                                val updatedReplies = question.replies.map { reply ->
+                                    if (reply.id == replyId) {
+                                        result.data // Replace only the specific reply
+                                    } else {
+                                        reply // Keep other replies unchanged
+                                    }
+                                }
+                                question.copy(replies = updatedReplies) // Create a new question with updated replies
+                            } else {
+                                question // Keep other questions unchanged
+                            }
+                        }
+                        _questionsState.value = ResultState.Success(updatedQuestions) // Update the state with the modified questions list
+                    }
+                }
+                is ResultState.Failure -> {
+                    Log.e("debug", "Failed to update reply reports: ${result.e}")
+                }
+                ResultState.Loading -> {
+                    Log.d("debug", "Updating reply reports...")
+                }
+            }
+        }
+    }
+*/
+
+
+
+
+
+    /*
     fun deleteQuestion(questionId: String, subCategory: String) = viewModelScope.launch {
         repo.deleteQuestion(questionId, subCategory).collect { result ->
             when (result) {
@@ -213,16 +526,20 @@ class FirestoreViewModel @Inject constructor(
             }
         }
     }
-    fun deleteAllQuestions(subCategory: String) = viewModelScope.launch {
-        repo.deleteAllQuestions(subCategory).collect { result ->
-            when (result) {
-                is ResultState.Success -> { _questionsState.value = ResultState.Success(emptyList()) }
-                is ResultState.Failure -> { _questionsState.value = ResultState.Failure(result.e) }
-                ResultState.Loading -> { _questionsState.value = ResultState.Loading }
-            }
+
+
+    fun updateQuestionReports(questionId: String, userId: String, subCategory: String) = viewModelScope.launch {
+        repo.updateQuestionReports(questionId, userId, subCategory).collect { result ->
+            _questionsState.value = result
         }
     }
 
+    fun updateReplyReports(questionId: String, replyId: String, userId: String, subCategory: String) = viewModelScope.launch {
+        repo.updateReplyReports(questionId, replyId, userId, subCategory).collect { result ->
+            _questionsState.value = result
+        }
+    }
+*/
 }
 
 data class FirestoreState(

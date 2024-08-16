@@ -3,6 +3,7 @@ package com.firstapplication.file.Dialog
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,7 +12,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -21,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
@@ -83,7 +89,7 @@ fun ShoesDialog(
     onCategorySelected: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val categories = listOf("Male", "Female", "Cancel")
+    val categories = listOf("Male", "Female")
     val dialogColor = colorResource(id = R.color.primaryDark)
 
     Dialog(
@@ -93,51 +99,60 @@ fun ShoesDialog(
             dismissOnClickOutside = false // Disable dismiss on click outside
         )
     ) {
-        BackHandler(onBack = {
-            // Handle back button to dismiss dialog
-            navController.popBackStack()
-        })
-        Card(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(300.dp)
-                .padding(16.dp)
-                .background(colorResource(id = R.color.PurpleGrey80)),
-            shape = RoundedCornerShape(16.dp)
+                .background(dialogColor)
         ) {
-            Column(
+            Card(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .background(colorResource(id = R.color.PurpleGrey80)),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .fillMaxWidth()
+                    .height(150.dp),
+                shape = RoundedCornerShape(16.dp)
             ) {
-                Text(
-                    text = "Choose the category of shoes",
-                    modifier = Modifier.padding(16.dp),
-                )
-                Row(
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
+                        .fillMaxSize()
+                        .background(dialogColor),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    categories.forEach { category ->
-                        TextButton(
-                            onClick = {
-                                if (category == "Cancel") {
-                                    onDismiss()
-                                    navController.popBackStack() // Navigate to home screen
-                                } else {
+                    Text(
+                        text = "Choose the category of shoes",
+                        modifier = Modifier.padding(16.dp),
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                    ) {
+                        categories.forEach { category ->
+                            TextButton(
+                                onClick = {
                                     onCategorySelected(category)
                                     onDismiss()
-                                }
-                            },
-                            modifier = Modifier.padding(8.dp),
-                        ) {
-                            Text(category)
+                                },
+                                modifier = Modifier.padding(8.dp),
+                            ) {
+                                Text(category)
+                            }
                         }
                     }
                 }
+            }
+            // Close button
+            IconButton(
+                onClick = {
+                    onDismiss()
+                    navController.popBackStack() // Navigate to home screen
+                },
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Close"
+                )
             }
         }
     }
@@ -159,45 +174,39 @@ fun ShoesCatsDialog(
             dismissOnClickOutside = false // Disable dismiss on click outside
         )
     ) {
-        Card(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp)
-                .padding(16.dp),
-            shape = RoundedCornerShape(16.dp),
         ) {
-            BackHandler(onBack = {
-                // Handle back button to dismiss dialog
-                navController.navigate("CatogeriesOfEquipments")
-            })
-            Column(
+            Card(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .background(colorResource(id = R.color.PurpleGrey80)),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
+                    .fillMaxWidth()
+                    .height(200.dp),
+                shape = RoundedCornerShape(16.dp),
             ) {
-                BackHandler(onBack = {
-                    // Handle back button to dismiss dialog
-                    navController.navigate("CatogeriesOfEquipments")
-                })
-                Text(
-                    text = "Choose the type of shoes for",
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .background(colorResource(id = R.color.PurpleGrey80)),
-                )
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxSize()
+                        .background(colorResource(id = R.color.PurpleGrey80)),
                     verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    LazyColumn {
+                    Text(
+                        text = "Choose the type of shoes for",
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .background(colorResource(id = R.color.PurpleGrey80)),
+                    )
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        verticalArrangement = Arrangement.Center,
+                    ) {
                         item {
                             TextButton(
                                 onClick = {
                                     onSpiky()
-//                                    navController.navigate("ShoesSizes")
                                     onDismiss()
                                 },
                                 modifier = Modifier.padding(8.dp),
@@ -205,12 +214,10 @@ fun ShoesCatsDialog(
                                 Text("Spiky")
                             }
                         }
-
                         item {
                             TextButton(
                                 onClick = {
                                     onNonSpiky()
-//                                    navController.navigate("ShoesSizes")
                                     onDismiss()
                                 },
                                 modifier = Modifier.padding(8.dp),
@@ -220,11 +227,24 @@ fun ShoesCatsDialog(
                         }
                     }
                 }
-
+            }
+            // Close button
+            IconButton(
+                onClick = {
+                    navController.navigate("CatogeriesOfEquipments")
+                },
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Close"
+                )
             }
         }
     }
 }
+
 
 enum class DialogTypes {
     ShoesDialog,

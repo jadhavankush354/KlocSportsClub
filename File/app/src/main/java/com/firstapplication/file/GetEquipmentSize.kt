@@ -84,7 +84,7 @@ fun EquipmentSizeCalculatorByAge(
     equipmentType: String,
     categories: String
 ) {
-    var playerAge by remember { mutableStateOf(0) }
+    var playerAge by remember { mutableStateOf("0") }
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -139,9 +139,8 @@ fun EquipmentSizeCalculatorByAge(
             )
 
             OutlinedTextField(
-                value = playerAge.toString(),
-                onValueChange = { input ->
-                    playerAge = input.toIntOrNull() ?: 0
+                value = playerAge,
+                onValueChange = { playerAge = it
                 },
                 label = { Text("Player Age", color = Color.White) },
                 placeholder = { Text(text = "Age", color = Color.White) },
@@ -165,7 +164,7 @@ fun EquipmentSizeCalculatorByAge(
                         requiredEquipment,
                         equipmentType,
                         categories,
-                        playerAge
+                        playerAge.toIntOrNull() ?: 0
                     )
                 },
                 modifier = Modifier
@@ -248,14 +247,6 @@ fun EquipmentSizeCalculatorByAge(
 }
 
 
-
-
-
-
-
-
-
-
 @Composable
 fun DropdownMenuItem(
     onClick: () -> Unit,
@@ -326,7 +317,7 @@ fun EquipmentSizeCalculatorByHeight(
     equipmentType: String,
     categories: String
 ) {
-    var playerHeight by remember { mutableStateOf(0.0) }
+    var playerHeight by remember { mutableStateOf("0.0") }
 
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -379,23 +370,8 @@ fun EquipmentSizeCalculatorByHeight(
             )
 
             OutlinedTextField(
-                value = playerHeight.toString(),
-                onValueChange = { input ->
-                    Log.d("PlayerHeight", "Input: $input")
-                    if (input.isNotEmpty()) {
-                        val newHeight = input.toDoubleOrNull()
-                        if (newHeight != null) {
-                            playerHeight = newHeight
-                            Log.d("PlayerHeight", "Updated height: $playerHeight")
-                        } else {
-                            Log.d("PlayerHeight", "Invalid input: $input")
-                            // Optionally show an error message or feedback to the user
-                        }
-                    } else {
-                        playerHeight = 0.0
-                        Log.d("PlayerHeight", "Reset height to default: $playerHeight")
-                    }
-                },
+                value = playerHeight,
+                onValueChange = { playerHeight = it },
                 label = {
                     Text(
                         text = if (requiredEquipment.equals("Shoes", ignoreCase = true)) "Heel to Toe Length in cm" else "Player Height",
@@ -415,7 +391,7 @@ fun EquipmentSizeCalculatorByHeight(
                 textStyle = TextStyle(color = Color.White),
                 keyboardActions = KeyboardActions(
                     onDone = {
-                        keyboardController?.hide()
+                        keyboardController?.hide()  // Hides the keyboard when 'Done' is pressed
                     }
                 ),
                 modifier = Modifier
@@ -428,7 +404,7 @@ fun EquipmentSizeCalculatorByHeight(
                         requiredEquipment,
                         equipmentType,
                         categories,
-                        playerHeight
+                        playerHeight.toDoubleOrNull() ?: 0.0
                     )
                 },
                 modifier = Modifier

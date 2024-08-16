@@ -13,7 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.firstapplication.file.Dialog.BatTypeDialog
 import com.firstapplication.file.CatogeriesOfEquipments
-import com.firstapplication.file.ui.ComponentsUI.AskQuestionForum
+//import com.firstapplication.file.ui.ComponentsUI.AskQuestionForum
 import com.firstapplication.file.ui.ComponentsUI.EnglishWillow
 import com.firstapplication.file.ui.ComponentsUI.FetchDataScreen
 import com.firstapplication.file.ui.ComponentsUI.Gloves
@@ -49,6 +49,7 @@ import com.firstapplication.file.userAuthentication.presentation.sign_in.SignInS
 import com.firstapplication.file.userAuthentication.presentation.sign_up.SignUpScreen
 import com.firstapplication.file.userAuthentication.presentation.verify_email.VerifyEmailScreen
 import com.firstapplication.file.Dialog.BallD
+import com.firstapplication.file.ui.ComponentsUI.AskQuestionForum
 
 @Composable
 @ExperimentalComposeUiApi

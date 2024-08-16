@@ -4,5 +4,6 @@ data class Replies(
     val id:String,
     val userName:String,
     val subComment: String,
-    val timestamp: Long
+    val timestamp: Long,
+    val reportedUsers: List<String>
 )

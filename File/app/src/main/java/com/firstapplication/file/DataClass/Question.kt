@@ -4,5 +4,6 @@ data class Question(
     val userName:String,
     val comment: String,
     val replies: List<Replies>,
-    val timestamp: Long
+    val timestamp: Long,
+    val reportedUsers: List<String>
 )
