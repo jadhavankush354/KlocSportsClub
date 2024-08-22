@@ -84,7 +84,7 @@ fun EquipmentSizeCalculatorByAge(
     equipmentType: String,
     categories: String
 ) {
-    var playerAge by remember { mutableStateOf("0") }
+    var playerAge by remember { mutableStateOf("") }
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -280,7 +280,8 @@ suspend fun getEquipmentSize(
 
 
 @Composable
-fun ResultCard(equipmentFound: Boolean, equipmentSize: String?, equipmentImageResId: Int) {
+fun ResultCard(equipmentFound: Boolean, equipmentSize: String?, equipmentImageResId: Int)
+{
     if (equipmentFound && equipmentSize != null) {
         Card(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
             Column(modifier = Modifier.padding(16.dp)) {
@@ -317,7 +318,7 @@ fun EquipmentSizeCalculatorByHeight(
     equipmentType: String,
     categories: String
 ) {
-    var playerHeight by remember { mutableStateOf("0.0") }
+    var playerHeight by remember { mutableStateOf("") }
 
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -380,7 +381,7 @@ fun EquipmentSizeCalculatorByHeight(
                 },
                 placeholder = {
                     Text(
-                        text = if (requiredEquipment.equals("Shoes", ignoreCase = true)) "Enter heel to toe ratio" else "Height",
+                        text = if (requiredEquipment.equals("Shoes", ignoreCase = true)) "Enter between 23.4 to 34 in cm" else "Enter the height in feet(eg=5.8)",
                         color = Color.White
                     )
                 },
